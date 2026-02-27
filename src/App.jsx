@@ -508,15 +508,20 @@ const MenuScreen = ({
           
                                         return driveId ? (
                                           <img 
-                                            src={`https://lh3.googleusercontent.com/d/${driveId}=w200`} 
-                                            className="h-full w-full object-cover rounded-lg border shadow-sm group-hover:scale-[2.5] group-hover:z-50 transition-transform cursor-pointer bg-gray-50" 
-                                            alt="Refacción"
-                                            onError={(e) => {
-                                              e.target.onerror = null; 
-                                              e.target.src = 'https://placehold.co/100x100?text=Error+Permisos';
-                                            }}
-                               onClick={() => window.open(val.match(/https:\/\/[^\s]+/)?.[0], '_blank')} 
-                          />
+  src={`https://lh3.googleusercontent.com/d/${driveId}=w400`} 
+  className="h-full w-full object-cover rounded-lg border shadow-sm group-hover:scale-[2.5] group-hover:z-50 transition-transform cursor-pointer bg-white" 
+  alt="Refacción"
+  onError={(e) => {
+    // Si falla el servidor lh3, intentamos con el de thumbnail tradicional
+    if (!e.target.dataset.triedBackup) {
+      e.target.dataset.triedBackup = "true";
+      e.target.src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w400`;
+    } else {
+      e.target.src = 'https://placehold.co/100x100?text=Error+Carga';
+    }
+  }}
+  onClick={() => window.open(val.match(/https:\/\/[^\s]+/)?.[0], '_blank')} 
+/>
           ) : <span className="text-red-400">ID no encontrado</span>;
         })()}
       </div>
