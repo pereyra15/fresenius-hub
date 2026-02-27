@@ -1,3 +1,4 @@
+import './index.css';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
 import { 
@@ -495,10 +496,12 @@ const MenuScreen = ({
                                 {typeof val === 'string' && val.includes('drive.google.com') ? (
                                   <div className="relative group">
                                     <img 
-                                      src={`https://drive.google.com/thumbnail?id=${val.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1]}&sz=w200`} 
-                                      className="h-10 w-10 object-cover rounded-lg border shadow-sm group-hover:scale-150 transition-transform cursor-pointer" 
+                                      src={`https://drive.google.com/uc?export=view&id=${val.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1]}`} 
+                                      className="h-16 w-16 object-contain rounded-lg border shadow-sm group-hover:scale-150 transition-transform cursor-pointer bg-gray-50" 
+                                      alt="Refacción"
+                                      onError={(e) => { e.target.src = 'https://placehold.co/100x100?text=Sin+Imagen'; }}
                                       onClick={() => window.open(val, '_blank')} 
-                                    />
+                                      />
                                   </div>
                                 ) : <span className="text-gray-700 font-medium">{val}</span>}
                               </td>
