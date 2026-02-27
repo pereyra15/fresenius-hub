@@ -778,18 +778,20 @@ export default function App() {
   const [loginForm, setLoginForm] = useState({ engineerName: '', password: '' });
 
   const handleScreenChange = (newScreen) => {
-    // Limpiar formularios dependiendo de la pantalla
-    if (newScreen === 'register') {
-      setRegisterForm({ engineerName: '', phone: '', email: '', password: '' });
-    } else if (newScreen === 'login') {
-      setLoginForm({ engineerName: '', password: '' });
-    } else if (newScreen === 'landing') {
-      // Borrado de seguridad al cerrar sesión
-      setLoginForm({ engineerName: '', password: '' });
-      setRegisterForm({ engineerName: '', phone: '', email: '', password: '' });
-    }
-    setScreen(newScreen);
-  };
+  if (newScreen === 'register') {
+    setRegisterForm({ engineerName: '', phone: '', email: '', password: '' });
+  } else if (newScreen === 'login') {
+    setLoginForm({ engineerName: '', password: '' });
+  } else if (newScreen === 'landing') {
+    setLoginForm({ engineerName: '', password: '' });
+    setRegisterForm({ engineerName: '', phone: '', email: '', password: '' });
+  }
+  
+  setScreen(newScreen);
+  
+  // ESTO ES LO NUEVO: Guarda el paso en el historial del celular
+  window.history.pushState({ screen: newScreen }, '');
+};
 
   // EFECTO DE LIMPIEZA AUTOMÁTICA DE MENSAJES
   useEffect(() => {
@@ -801,6 +803,27 @@ export default function App() {
       return () => clearTimeout(timer);
     }
   }, [error, message]);
+
+  // --- CONTROL DEL BOTÓN ATRÁS DEL CELULAR ---
+useEffect(() => {
+  // Cuando la app carga, creamos un punto de partida en el historial
+  window.history.replaceState({ screen: 'landing' }, '');
+
+  const handlePopState = (event) => {
+    // Si el usuario presiona "atrás", el navegador nos da el 'state' que guardamos
+    if (event.state) {
+      if (event.state.screen) {
+        setScreen(event.state.screen);
+      }
+      if (event.state.subScreen) {
+        setMenuSubScreen(event.state.subScreen);
+      }
+    }
+  };
+
+  window.addEventListener('popstate', handlePopState);
+  return () => window.removeEventListener('popstate', handlePopState);
+}, []);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -942,7 +965,7 @@ export default function App() {
             />
           )}
         </div>
-        <div className="mt-4 pt-4 border-t border-gray-50 text-center flex justify-center items-center gap-2"><div className="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div><p className="text-[7px] font-black text-gray-300 tracking-[0.4em] uppercase">Fresenius Medical Care • Engineering Hub 2026</p></div>
+        <div className="mt-4 pt-4 border-t border-gray-50 text-center flex justify-center items-center gap-2"><div className="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div><p className="text-[7px] font-black text-gray-300 tracking-[0.4em] uppercase">FRESENIUS KABI • Engineering Hub 2026</p></div>
       </div>
       <style>{`
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
