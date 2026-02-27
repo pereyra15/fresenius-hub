@@ -186,7 +186,8 @@ const LoginScreen = ({ form, onChange, onSubmit, loading, setScreen }) => (
 
 const MenuScreen = ({ 
   menuSubScreen, setMenuSubScreen, loginForm, setScreen, setMessage, setError, userId, db,
-  contacts, addContact, deleteContact, serviceOrders, sheetOrders, setSheetOrders, equipment
+  contacts, addContact, deleteContact, serviceOrders, sheetOrders, setSheetOrders, equipment,
+  documentationSubScreen, setDocumentationSubScreen, currentSparePartView, setCurrentSparePartView
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState(null);
@@ -196,10 +197,8 @@ const MenuScreen = ({
   const [showAddContactForm, setShowAddContactForm] = useState(false);
   const [newContact, setNewContact] = useState({ name: '', phone: '', unit: '', email: '' });
   
-  const [documentationSubScreen, setDocumentationSubScreen] = useState(null);
   const [sparePartsData, setSparePartsData] = useState([]);
   const [loadingSpares, setLoadingSpares] = useState(false);
-  const [currentSparePartView, setCurrentSparePartView] = useState(null);
   
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
   const [closingOrder, setClosingOrder] = useState(false);
@@ -277,7 +276,6 @@ const MenuScreen = ({
         } catch (e) { console.error("Sheet Sync Failed:", e); }
       }
 
-      // Añadir temporalmente a la lista local para mostrarlo inmediatamente
       const novaMendo = {
         id: docRef.id,
         ...reportForm,
@@ -295,13 +293,10 @@ const MenuScreen = ({
 
   const closeOrder = async (order) => {
     setClosingOrder(true);
-    
-    // 1. Actualización optimista: Cambiar la interfaz a 'Cerrado' inmediatamente
     setSheetOrders(prev => prev.map(o => o.id === order.id ? { ...o, status: 'Cerrado' } : o));
     setSelectedOrderDetails(prev => ({ ...prev, status: 'Cerrado' }));
 
     try {
-      // 2. Solo intentar actualizar en Firebase si es un ID válido de Firebase (que no empiece por "sheet-")
       if (order.id && !String(order.id).startsWith('sheet-')) {
         const orderRef = doc(db, 'artifacts', appId, 'public', 'data', 'service_orders', order.id);
         try {
@@ -311,7 +306,6 @@ const MenuScreen = ({
         }
       }
       
-      // 3. Sincronizar con Google Sheets
       if (GOOGLE_SHEETS_URL) {
         try {
           await fetch(GOOGLE_SHEETS_URL, { 
@@ -495,12 +489,10 @@ const MenuScreen = ({
                               <td key={j} className="p-2 align-middle">
                                 {typeof val === 'string' && val.includes('drive.google.com') ? (
                                   <div className="flex flex-col gap-2">
-                                    {/* 1. Mostramos el texto antes del link (limpiándolo) */}
                                     <span className="text-gray-700 font-medium">
                                       {val.split('https://')[0]}
                                         </span>
       
-                                    {/* 2. Mostramos la imagen con el nuevo enlace lh3 */}
                                     <div className="relative group w-16 h-16">
                                       {(() => {
                                         const idMatch = val.match(/\/d\/([a-zA-Z0-9_-]+)/);
@@ -508,28 +500,27 @@ const MenuScreen = ({
           
                                         return driveId ? (
                                           <img 
-  src={`https://lh3.googleusercontent.com/d/${driveId}=w400`} 
-  className="h-full w-full object-cover rounded-lg border shadow-sm group-hover:scale-[2.5] group-hover:z-50 transition-transform cursor-pointer bg-white" 
-  alt="Refacción"
-  onError={(e) => {
-    // Si falla el servidor lh3, intentamos con el de thumbnail tradicional
-    if (!e.target.dataset.triedBackup) {
-      e.target.dataset.triedBackup = "true";
-      e.target.src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w400`;
-    } else {
-      e.target.src = 'https://placehold.co/100x100?text=Error+Carga';
-    }
-  }}
-  onClick={() => window.open(val.match(/https:\/\/[^\s]+/)?.[0], '_blank')} 
-/>
-          ) : <span className="text-red-400">ID no encontrado</span>;
-        })()}
-      </div>
-    </div>
-  ) : (
-    <span className="text-gray-700 font-medium">{val}</span>
-  )}
-</td>
+                                            src={`https://googleusercontent.com/profile/picture/6${driveId}=w400`} 
+                                            className="h-full w-full object-cover rounded-lg border shadow-sm group-hover:scale-[2.5] group-hover:z-50 transition-transform cursor-pointer bg-white" 
+                                            alt="Refacción"
+                                            onError={(e) => {
+                                              if (!e.target.dataset.triedBackup) {
+                                                e.target.dataset.triedBackup = "true";
+                                                e.target.src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w400`;
+                                              } else {
+                                                e.target.src = 'https://placehold.co/100x100?text=Error+Carga';
+                                              }
+                                            }}
+                                            onClick={() => window.open(val.match(/https:\/\/[^\s]+/)?.[0], '_blank')} 
+                                          />
+                                          ) : <span className="text-red-400">ID no encontrado</span>;
+                                        })()}
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <span className="text-gray-700 font-medium">{val}</span>
+                                  )}
+                                </td>
                             ))}
                           </tr>
                         ))}
@@ -614,7 +605,6 @@ const MenuScreen = ({
         );
 
       case 'ordenesAsignadas':
-        // Usando las órdenes obtenidas de Google Sheets
         const myOrders = sheetOrders.filter(so => so.engineerName === loginForm.engineerName);
         
         if (selectedOrderDetails) {
@@ -755,7 +745,6 @@ const MenuScreen = ({
       </div>
       <div className="flex-1 overflow-y-auto scroll-smooth pb-10">{menuSubScreen === 'dashboard' ? (<div className="grid gap-5 animate-fadeIn"><MenuButton label="Inventario" subScreenId="equipos" svgIcon={<EquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Reportes" subScreenId="reporteEquipos" svgIcon={<ReporteEquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Material" subScreenId="materialApoyo" svgIcon={<MaterialApoyoSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Agenda" subScreenId="contactos" svgIcon={<ContactosSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /></div>) : renderContent()}</div>
       
-      {/* MODALES */}
       {showResetOSConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-white p-10 rounded-[2.5rem] w-full max-w-xs text-center shadow-2xl animate-popIn"><h3 className="font-black text-2xl mb-4 uppercase text-gray-800">Nueva Orden</h3><p className="text-sm text-gray-400 mb-8 font-bold leading-relaxed">¿Deseas vaciar los campos?</p><div className="flex flex-col gap-3"><button onClick={() => { resetOSForm(); setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black">LIMPIAR</button><button onClick={() => { setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-4 bg-gray-100 text-gray-800 rounded-2xl font-black">MANTENER</button></div></div></div>)}
       {selectedEquipment && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-white p-10 rounded-[2.5rem] w-full max-w-xs text-center shadow-2xl animate-popIn"><h3 className="font-black text-xl mb-4 uppercase text-gray-800">Reportar Equipo</h3><p className="text-sm text-gray-400 mb-8 font-bold leading-relaxed">¿Reportar serie <span className="text-blue-600 font-black">{selectedEquipment.serie}</span>?</p><div className="flex gap-4"><button onClick={() => setSelectedEquipment(null)} className="flex-1 py-4 bg-gray-100 rounded-2xl font-black text-gray-500">NO</button><button onClick={() => { setReportForm({ ...reportForm, serie: selectedEquipment.serie, modelo: selectedEquipment.modelo || '', descripcionEquipo: selectedEquipment.descripcion || '', cliente: selectedEquipment.cliente || '' }); setSelectedEquipment(null); setMenuSubScreen('generarOS'); }} className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
       {showGenerateConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-white p-10 rounded-[2.5rem] w-full max-w-xs text-center shadow-2xl animate-popIn"><h3 className="font-black text-2xl mb-4 text-green-600 uppercase">Confirmar</h3><p className="text-sm text-gray-400 mb-8 font-bold leading-relaxed">La información se enviará a la nube.</p><div className="flex gap-4"><button onClick={() => setShowGenerateConfirm(false)} className="flex-1 py-4 bg-gray-100 rounded-2xl font-black text-gray-500">CERRAR</button><button onClick={() => { setShowGenerateConfirm(false); submitReport(); }} className="flex-1 py-4 bg-green-600 text-white rounded-2xl font-black">ENVIAR</button></div></div></div>)}
@@ -768,32 +757,44 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [screen, setScreen] = useState('landing');
   const [menuSubScreen, setMenuSubScreen] = useState('dashboard'); 
+  const [documentationSubScreen, setDocumentationSubScreen] = useState(null);
+  const [currentSparePartView, setCurrentSparePartView] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [equipment, setEquipment] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [serviceOrders, setServiceOrders] = useState([]);
-  const [sheetOrders, setSheetOrders] = useState([]); // <--- Estado actual de Google Sheets
+  const [sheetOrders, setSheetOrders] = useState([]); 
   const [registerForm, setRegisterForm] = useState({ engineerName: '', phone: '', email: '', password: '' });
   const [loginForm, setLoginForm] = useState({ engineerName: '', password: '' });
 
-  const handleScreenChange = (newScreen) => {
-  if (newScreen === 'register') {
-    setRegisterForm({ engineerName: '', phone: '', email: '', password: '' });
-  } else if (newScreen === 'login') {
-    setLoginForm({ engineerName: '', password: '' });
-  } else if (newScreen === 'landing') {
-    setLoginForm({ engineerName: '', password: '' });
-    setRegisterForm({ engineerName: '', phone: '', email: '', password: '' });
-  }
-  
-  setScreen(newScreen);
-  
-  // ESTO ES LO NUEVO: Guarda el paso en el historial del celular
-  window.history.pushState({ screen: newScreen }, '');
-};
+  // --- FUNCIÓN DE NAVEGACIÓN GLOBAL ---
+  const navigate = (s, ms = 'dashboard', ds = null, csv = null) => {
+    setScreen(s);
+    setMenuSubScreen(ms);
+    setDocumentationSubScreen(ds);
+    setCurrentSparePartView(csv);
+    
+    window.history.pushState({ 
+      screen: s, 
+      menuSub: ms, 
+      docSub: ds, 
+      spareView: csv 
+    }, '');
+  };
 
-  // EFECTO DE LIMPIEZA AUTOMÁTICA DE MENSAJES
+  const handleScreenChange = (newScreen) => {
+    if (newScreen === 'register') {
+      setRegisterForm({ engineerName: '', phone: '', email: '', password: '' });
+    } else if (newScreen === 'login') {
+      setLoginForm({ engineerName: '', password: '' });
+    } else if (newScreen === 'landing') {
+      setLoginForm({ engineerName: '', password: '' });
+      setRegisterForm({ engineerName: '', phone: '', email: '', password: '' });
+    }
+    navigate(newScreen);
+  };
+
   useEffect(() => {
     if (error || message) {
       const timer = setTimeout(() => {
@@ -804,26 +805,23 @@ export default function App() {
     }
   }, [error, message]);
 
-  // --- CONTROL DEL BOTÓN ATRÁS DEL CELULAR ---
-useEffect(() => {
-  // Cuando la app carga, creamos un punto de partida en el historial
-  window.history.replaceState({ screen: 'landing' }, '');
+  // --- CONTROL DEL BOTÓN ATRÁS ---
+  useEffect(() => {
+    window.history.replaceState({ screen: 'landing', menuSub: 'dashboard', docSub: null, spareView: null }, '');
 
-  const handlePopState = (event) => {
-    // Si el usuario presiona "atrás", el navegador nos da el 'state' que guardamos
-    if (event.state) {
-      if (event.state.screen) {
-        setScreen(event.state.screen);
+    const handlePopState = (event) => {
+      if (event.state) {
+        const { screen, menuSub, docSub, spareView } = event.state;
+        setScreen(screen);
+        setMenuSubScreen(menuSub);
+        setDocumentationSubScreen(docSub || null);
+        setCurrentSparePartView(spareView || null);
       }
-      if (event.state.subScreen) {
-        setMenuSubScreen(event.state.subScreen);
-      }
-    }
-  };
+    };
 
-  window.addEventListener('popstate', handlePopState);
-  return () => window.removeEventListener('popstate', handlePopState);
-}, []);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -871,7 +869,6 @@ useEffect(() => {
     fetchEquipment();
   }, []);
 
-  // -- NUEVA LÓGICA PARA OBTENER ÓRDENES DIRECTO DE GOOGLE SHEETS --
   useEffect(() => {
     const fetchSheetOrders = async () => {
       try {
@@ -884,7 +881,6 @@ useEffect(() => {
           for (let c of row) { if(c === '"') inQ = !inQ; else if(c === ',' && !inQ) { vals.push(curr.trim().replace(/^"|"$/g, '')); curr = ''; } else curr += c; }
           vals.push(curr.trim().replace(/^"|"$/g, ''));
           const obj = {};
-          // Mapeo de columnas por encabezados
           headers.forEach((h, i) => { 
             const v = vals[i] || ''; 
             if(h.includes('estatus') || h.includes('status')) obj.status = v || 'Abierto';
@@ -931,7 +927,7 @@ useEffect(() => {
         return; 
       }
       setError(''); 
-      setScreen('menu');
+      navigate('menu');
     } catch (e) { setError("Error."); } finally { setLoading(false); }
   };
 
@@ -959,9 +955,12 @@ useEffect(() => {
           {screen === 'login' && <LoginScreen form={loginForm} onChange={e => setLoginForm({...loginForm, [e.target.name]: e.target.value})} onSubmit={loginEngineer} loading={loading} setScreen={handleScreenChange} />}
           {screen === 'menu' && (
             <MenuScreen 
-              menuSubScreen={menuSubScreen} setMenuSubScreen={setMenuSubScreen} loginForm={loginForm} setScreen={handleScreenChange} setMessage={setMessage} setError={setError} userId={user?.uid} db={db} contacts={contacts} 
+              menuSubScreen={menuSubScreen} setMenuSubScreen={(val) => navigate('menu', val)} 
+              loginForm={loginForm} setScreen={handleScreenChange} setMessage={setMessage} setError={setError} userId={user?.uid} db={db} contacts={contacts} 
               addContact={c => addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'contacts'), {...c, addedBy: user?.uid})} 
               deleteContact={id => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'contacts', id))} serviceOrders={serviceOrders} sheetOrders={sheetOrders} setSheetOrders={setSheetOrders} equipment={equipment} 
+              documentationSubScreen={documentationSubScreen} setDocumentationSubScreen={(val) => navigate('menu', 'materialApoyo', val)}
+              currentSparePartView={currentSparePartView} setCurrentSparePartView={(val) => navigate('menu', 'materialApoyo', 'SPAREPARTS', val)}
             />
           )}
         </div>
