@@ -494,17 +494,37 @@ const MenuScreen = ({
                             {Object.values(row).map((val, j) => (
                               <td key={j} className="p-2 align-middle">
                                 {typeof val === 'string' && val.includes('drive.google.com') ? (
-                                  <div className="relative group">
-                                    <img 
-                                      src={`https://drive.google.com/uc?export=view&id=${val.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1]}`} 
-                                      className="h-16 w-16 object-contain rounded-lg border shadow-sm group-hover:scale-150 transition-transform cursor-pointer bg-gray-50" 
-                                      alt="Refacción"
-                                      onError={(e) => { e.target.src = 'https://placehold.co/100x100?text=Sin+Imagen'; }}
-                                      onClick={() => window.open(val, '_blank')} 
-                                      />
-                                  </div>
-                                ) : <span className="text-gray-700 font-medium">{val}</span>}
-                              </td>
+                                  <div className="flex flex-col gap-2">
+                                    {/* 1. Mostramos el texto antes del link (limpiándolo) */}
+                                    <span className="text-gray-700 font-medium">
+                                      {val.split('https://')[0]}
+                                        </span>
+      
+                                    {/* 2. Mostramos la imagen con el nuevo enlace lh3 */}
+                                    <div className="relative group w-16 h-16">
+                                      {(() => {
+                                        const idMatch = val.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                                        const driveId = idMatch ? idMatch[1] : null;
+          
+                                        return driveId ? (
+                                          <img 
+                                            src={`https://lh3.googleusercontent.com/d/${driveId}=w200`} 
+                                            className="h-full w-full object-cover rounded-lg border shadow-sm group-hover:scale-[2.5] group-hover:z-50 transition-transform cursor-pointer bg-gray-50" 
+                                            alt="Refacción"
+                                            onError={(e) => {
+                                              e.target.onerror = null; 
+                                              e.target.src = 'https://placehold.co/100x100?text=Error+Permisos';
+                                            }}
+                               onClick={() => window.open(val.match(/https:\/\/[^\s]+/)?.[0], '_blank')} 
+                          />
+          ) : <span className="text-red-400">ID no encontrado</span>;
+        })()}
+      </div>
+    </div>
+  ) : (
+    <span className="text-gray-700 font-medium">{val}</span>
+  )}
+</td>
                             ))}
                           </tr>
                         ))}
