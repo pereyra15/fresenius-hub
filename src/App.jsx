@@ -505,7 +505,12 @@ const MenuScreen = ({
                   <p className="text-[9px] text-gray-400 font-bold uppercase">{c.client}</p>
                   <div className="flex justify-between items-center mt-2">
                     <p className="text-xs font-black text-purple-700 font-mono">📞 {c.phone}</p>
-                    <button onClick={() => deleteContact(c.id)} className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+                    <button 
+                      onClick={() => deleteContact(c.id)} 
+                      className="text-red-500 bg-red-100 w-7 h-7 rounded-full flex items-center justify-center active:scale-90 transition-all"
+                    >
+                      ✕
+                    </button>
                   </div>
                 </div>
               )) : (
