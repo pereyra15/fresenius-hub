@@ -140,7 +140,7 @@ const ContactosSVG = () => (
 const LandingScreen = ({ setScreen }) => (
   <div className="flex flex-col gap-6 animate-fadeIn pb-10">
     <div className="text-center mb-10">
-      <img src="https://drive.google.com/thumbnail?id=1xl3VUyb0n-2wDlaBO06KRamI13PuWX8z&sz=w400" alt="Logo Hub" className="w-[76px] h-[76px] object-cover rounded-full mx-auto mb-4 shadow-sm" />
+      <img src="https://lh3.googleusercontent.com/d/1xl3VUyb0n-2wDlaBO06KRamI13PuWX8z" alt="Logo Hub" className="w-[76px] h-[76px] object-cover rounded-full mx-auto mb-4 shadow-sm bg-white" />
       <h1 className="text-5xl font-black text-blue-700 tracking-tighter">FRESENIUS</h1>
       <p className="text-[10px] font-black text-gray-400 tracking-[0.4em] mt-2 uppercase">Engineering Hub</p>
     </div>
@@ -791,6 +791,37 @@ export default function App() {
   const [sheetOrders, setSheetOrders] = useState([]); 
   const [registerForm, setRegisterForm] = useState({ engineerName: '', phone: '', email: '', password: '' });
   const [loginForm, setLoginForm] = useState({ engineerName: '', password: '' });
+
+  // --- CONFIGURACIÓN DE ICONO Y PWA PARA EL CELULAR ---
+  useEffect(() => {
+    document.title = "Fresenius Hub";
+    const iconUrl = "https://lh3.googleusercontent.com/d/1xl3VUyb0n-2wDlaBO06KRamI13PuWX8z";
+
+    // Cambiar Favicon estándar
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+    link.href = iconUrl;
+
+    // Cambiar icono para dispositivos Apple/iOS
+    let appleLink = document.querySelector("link[rel='apple-touch-icon']");
+    if (!appleLink) { appleLink = document.createElement('link'); appleLink.rel = 'apple-touch-icon'; document.head.appendChild(appleLink); }
+    appleLink.href = iconUrl;
+
+    // Forzar Manifest para que Android lo detecte al añadir a la pantalla de inicio
+    const manifest = {
+      name: "Fresenius Engineering Hub",
+      short_name: "Fresenius",
+      start_url: "/",
+      display: "standalone",
+      background_color: "#f1f5f9",
+      theme_color: "#2563eb",
+      icons: [{ src: iconUrl, sizes: "192x192 512x512", type: "image/png", purpose: "any maskable" }]
+    };
+    const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    let manifestLink = document.querySelector("link[rel='manifest']");
+    if (!manifestLink) { manifestLink = document.createElement('link'); manifestLink.rel = 'manifest'; document.head.appendChild(manifestLink); }
+    manifestLink.href = URL.createObjectURL(manifestBlob);
+  }, []);
 
   // --- FUNCIÓN DE NAVEGACIÓN GLOBAL ---
   const navigate = (s, ms = 'dashboard', ds = null, csv = null) => {
