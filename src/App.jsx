@@ -140,9 +140,7 @@ const ContactosSVG = () => (
 const LandingScreen = ({ setScreen }) => (
   <div className="flex flex-col gap-6 animate-fadeIn pb-10">
     <div className="text-center mb-10">
-      <div className="inline-block p-4 bg-blue-50 rounded-3xl mb-4">
-        <svg className="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-      </div>
+      <img src="https://drive.google.com/thumbnail?id=1xl3VUyb0n-2wDlaBO06KRamI13PuWX8z&sz=w400" alt="Logo Hub" className="w-[76px] h-[76px] object-cover rounded-full mx-auto mb-4 shadow-sm" />
       <h1 className="text-5xl font-black text-blue-700 tracking-tighter">FRESENIUS</h1>
       <p className="text-[10px] font-black text-gray-400 tracking-[0.4em] mt-2 uppercase">Engineering Hub</p>
     </div>
