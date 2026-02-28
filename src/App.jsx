@@ -355,11 +355,15 @@ const MenuScreen = ({
       const text = await response.text();
       const rows = text.split('\n');
       const headers = rows[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-      const data = rows.slice(1).filter(r => r.trim()).map(row => {
+      const data = rows.slice(1).filter(r => r.trim()).map((row, idx) => {
         const values = []; let current = '', inQuote = false;
         for (let char of row) { if (char === '"') inQuote = !inQuote; else if (char === ',' && !inQuote) { values.push(current.trim().replace(/^"|"$/g, '')); current = ''; } else current += char; }
         values.push(current.trim().replace(/^"|"$/g, ''));
         const obj = {}; headers.forEach((h, i) => obj[h] = values[i] || '');
+        
+        // Asignamos un ID único oculto para que el buscador no se confunda
+        Object.defineProperty(obj, '_id', { value: idx, enumerable: false });
+        
         return obj;
       });
       setSparePartsData(data);
@@ -547,8 +551,8 @@ const MenuScreen = ({
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {filteredSpareParts.length > 0 ? filteredSpareParts.map((row, i) => (
-                          <tr key={i} className="hover:bg-indigo-50 transition-colors">
+                        {filteredSpareParts.length > 0 ? filteredSpareParts.map((row) => (
+                          <tr key={row._id} className="hover:bg-indigo-50 transition-colors">
                             {Object.values(row).map((val, j) => (
                               <td key={j} className="p-2 align-middle">
                                 {typeof val === 'string' && val.includes('drive.google.com') ? (
@@ -560,6 +564,7 @@ const MenuScreen = ({
                                         const driveId = idMatch ? idMatch[1] : null;
                                         return driveId ? (
                                           <img 
+                                            key={driveId}
                                             src={`https://googleusercontent.com/profile/picture/6${driveId}=w400`} 
                                             className="h-full w-full object-cover rounded-lg border shadow-sm group-hover:scale-[2.5] group-hover:z-50 transition-transform cursor-pointer bg-white" 
                                             alt="Refacción"
