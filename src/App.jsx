@@ -435,6 +435,7 @@ const MenuScreen = ({
             <Select label="Tipo de Servicio" name="tipoOS" value={reportForm.tipoOS} onChange={handleReportChange} options={['ZMXC (MTTO CORRECTIVO)', 'ZMXP (MTTO PREVENTIVO)', 'ZMXI (INSTALACIÓN)', 'ZMXA (ASESORÍA)']} />
             <Input label="Serie / SN" name="serie" value={reportForm.serie} onChange={handleReportChange} />
             <Input label="Modelo" name="modelo" value={reportForm.modelo} onChange={handleReportChange} readOnly />
+            <Input label="Descripción del Equipo" name="descripcionEquipo" value={reportForm.descripcionEquipo} onChange={handleReportChange} readOnly />
             <Input label="Hospital" name="cliente" value={reportForm.cliente} onChange={handleReportChange} readOnly />
             <Select label="Área" name="area" value={reportForm.area} onChange={handleReportChange} options={['Recolección', 'Fraccionamiento', 'Aféresis']} />
             <TextArea label="Falla Reportada" name="falla" value={reportForm.falla} onChange={handleReportChange} />
@@ -645,6 +646,10 @@ const MenuScreen = ({
                   <div>
                     <p className="text-[8px] font-black text-gray-400 uppercase">Modelo</p>
                     <p className="text-xs font-black text-gray-700">{so.modelo || 'N/A'}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-[8px] font-black text-gray-400 uppercase">Descripción</p>
+                    <p className="text-xs font-black text-gray-700">{so.descripcionEquipo || so.descripcion || 'No especificada'}</p>
                   </div>
                 </div>
 
