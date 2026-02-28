@@ -20,7 +20,12 @@ import {
   updateDoc 
 } from 'firebase/firestore';
 
-// --- CONFIGURACIÓN DE ENTORNO Y FIREBASE ---
+// ========================================================
+// CONFIGURACIÓN DE IMAGEN - ENLACE DIRECTO DE GOOGLE DRIVE
+// ========================================================
+const LOGO_URL = "https://drive.google.com/thumbnail?id=1xl3VUyb0n-2wDlaBO06KRamI13PuWX8z&sz=w600"; 
+// ========================================================
+
 const firebaseConfig = typeof __firebase_config !== 'undefined' 
   ? JSON.parse(__firebase_config) 
   : {
@@ -37,7 +42,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'fresenius-hub-v1';
 
-const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby-qGJlQG_vxJMxqYKK0EBDkFJXLbLi7Gby7fCpej0ZnDgMpT0YsXELWwbvxOVsrTSkhg/exec"; 
+const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby-get/exec"; 
 
 const mockEngineers = [
   'WS06 JORGE VELAZQUEZ', 'WS07 EDGAR NUÑO', 'WS09 ZAHIRA ISLAS',
@@ -140,8 +145,15 @@ const ContactosSVG = () => (
 const LandingScreen = ({ setScreen }) => (
   <div className="flex flex-col gap-6 animate-fadeIn pb-10">
     <div className="text-center mb-10">
-      <div className="inline-block p-4 bg-blue-50 rounded-3xl mb-4">
-        <svg className="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+      <div className="inline-block p-1 bg-white rounded-full mb-4 shadow-xl border-4 border-blue-50 overflow-hidden w-36 h-36">
+        <img 
+          src={LOGO_URL} 
+          alt="Fresenius Hub Logo" 
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.src = "https://placehold.co/400x400/3b66ad/white?text=LOGO";
+          }}
+        />
       </div>
       <h1 className="text-5xl font-black text-blue-700 tracking-tighter">FRESENIUS</h1>
       <p className="text-[10px] font-black text-gray-400 tracking-[0.4em] mt-2 uppercase">Engineering Hub</p>
@@ -218,7 +230,6 @@ const MenuScreen = ({
     });
   };
 
-  // --- LÓGICA DE RETORNO INTELIGENTE ---
   const handleSmartBack = () => {
     if (selectedOrderDetails) {
       setSelectedOrderDetails(null);
@@ -229,7 +240,6 @@ const MenuScreen = ({
     } else if (menuSubScreen === 'generarOS' || menuSubScreen === 'ordenesAsignadas') {
       setMenuSubScreen('reporteEquipos');
     } else {
-      // Si estamos en cualquier otra pantalla principal (equipos, reporteEquipos, materialApoyo, contactos), volvemos al dashboard
       setMenuSubScreen('dashboard');
     }
   };
@@ -317,7 +327,7 @@ const MenuScreen = ({
         try {
           await updateDoc(orderRef, { status: 'Cerrado', closedAt: new Date().toISOString() });
         } catch (firebaseErr) {
-          console.warn("El documento no se encontró en la base de datos de Firebase, pero continuará la sincronización en Sheets.", firebaseErr);
+          console.warn("El documento no se encontró en la base de datos de Firebase.", firebaseErr);
         }
       }
       
@@ -339,7 +349,6 @@ const MenuScreen = ({
       setMessage("ORDEN FINALIZADA Y SINCRONIZADA.");
       setTimeout(() => setMessage(""), 3000);
     } catch (e) {
-      console.error(e);
       setError("Cerrado localmente. Error general al sincronizar.");
     } finally {
       setClosingOrder(false);
@@ -661,33 +670,6 @@ const MenuScreen = ({
                   )}
                 </div>
 
-                <div className="border-t pt-4 space-y-3">
-                  <p className="text-[8px] font-black text-gray-400 uppercase">Datos de Contacto</p>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs">👤</span>
-                    <p className="text-[11px] font-bold text-gray-700">{so.reporta || 'No especificado'}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs">📞</span>
-                    <p className="text-[11px] font-bold text-blue-600 font-mono">{so.telefono || 'Sin teléfono'}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs">✉️</span>
-                    <p className="text-[10px] font-bold text-gray-500">{so.email || 'Sin correo'}</p>
-                  </div>
-                </div>
-
-                {so.observaciones && (
-                  <div className="border-t pt-4">
-                    <p className="text-[8px] font-black text-gray-400 uppercase mb-1">Observaciones</p>
-                    <p className="text-[10px] font-bold text-gray-600 leading-tight">{so.observaciones}</p>
-                  </div>
-                )}
-
-                <div className="border-t pt-4 text-center">
-                  <p className="text-[7px] font-black text-gray-300 uppercase tracking-widest">Generado el {so.createdAt ? so.createdAt : 'Desconocido'}</p>
-                </div>
-
                 {(so.status && so.status.toLowerCase().includes('abierto')) && (
                   <div className="pt-6">
                     <button 
@@ -794,12 +776,7 @@ export default function App() {
     setDocumentationSubScreen(ds);
     setCurrentSparePartView(csv);
     
-    window.history.pushState({ 
-      screen: s, 
-      menuSub: ms, 
-      docSub: ds, 
-      spareView: csv 
-    }, '');
+    window.history.pushState({ screen: s, menuSub: ms, docSub: ds, spareView: csv }, '');
   };
 
   const handleScreenChange = (newScreen) => {
@@ -816,18 +793,13 @@ export default function App() {
 
   useEffect(() => {
     if (error || message) {
-      const timer = setTimeout(() => {
-        setError('');
-        setMessage('');
-      }, 4000);
+      const timer = setTimeout(() => { setError(''); setMessage(''); }, 4000);
       return () => clearTimeout(timer);
     }
   }, [error, message]);
 
-  // --- CONTROL DEL BOTÓN ATRÁS ---
   useEffect(() => {
     window.history.replaceState({ screen: 'landing', menuSub: 'dashboard', docSub: null, spareView: null }, '');
-
     const handlePopState = (event) => {
       if (event.state) {
         const { screen, menuSub, docSub, spareView } = event.state;
@@ -837,7 +809,6 @@ export default function App() {
         setCurrentSparePartView(spareView || null);
       }
     };
-
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
@@ -897,7 +868,7 @@ export default function App() {
         const headers = rows[0].split(',').map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
         const data = rows.slice(1).filter(r => r.trim()).map((row, idx) => {
           const vals = []; let curr = '', inQ = false;
-          for (let c of row) { if(c === '"') inQ = !inQ; else if(c === ',' && !inQ) { vals.push(curr.trim().replace(/^"|"$/g, '')); curr = ''; } else curr += c; }
+          for (let c of row) { if(c === '"') inQ = !inQ; else if(c === ',' && !inQ) { vals.push(curr.trim().replace(/^"|"$/g, '')); current = ''; } else curr += c; }
           vals.push(curr.trim().replace(/^"|"$/g, ''));
           const obj = {};
           headers.forEach((h, i) => { 
@@ -921,9 +892,7 @@ export default function App() {
         setSheetOrders(data);
       } catch (e) { console.error("Error al obtener órdenes de Sheets", e); }
     };
-    if (user) {
-        fetchSheetOrders();
-    }
+    if (user) { fetchSheetOrders(); }
   }, [user]);
 
   useEffect(() => {
@@ -940,13 +909,8 @@ export default function App() {
       const q = collection(db, 'artifacts', appId, 'public', 'data', 'engineers');
       const s = await getDocs(q);
       const found = s.docs.find(d => d.data().engineerName === loginForm.engineerName && d.data().password === loginForm.password);
-      if (!found) { 
-        setError("PIN INCORRECTO."); 
-        setLoading(false); 
-        return; 
-      }
-      setError(''); 
-      navigate('menu');
+      if (!found) { setError("PIN INCORRECTO."); setLoading(false); return; }
+      setError(''); navigate('menu');
     } catch (e) { setError("Error."); } finally { setLoading(false); }
   };
 
