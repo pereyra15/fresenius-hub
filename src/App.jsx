@@ -987,9 +987,40 @@ export default function App() {
   };
 
   const registerEngineer = async () => {
-    if (!registerForm.engineerName || !registerForm.password) { setError("CAMPOS OBLIGATORIOS."); return; }
+    if (!registerForm.engineerName || !registerForm.phone || !registerForm.email || !registerForm.password) { 
+      setError("TODOS LOS CAMPOS SON OBLIGATORIOS."); 
+      return; 
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(registerForm.email)) {
+      setError("CORREO ELECTRÓNICO INVÁLIDO.");
+      return;
+    }
+
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(registerForm.phone)) {
+      setError("EL TELÉFONO DEBE TENER EXACTAMENTE 10 DÍGITOS.");
+      return;
+    }
+
+    if (registerForm.password.length < 4) {
+      setError("EL PIN DEBE TENER AL MENOS 4 CARACTERES.");
+      return;
+    }
+
     setLoading(true);
     try {
+      const q = collection(db, 'artifacts', appId, 'public', 'data', 'engineers');
+      const s = await getDocs(q);
+      const found = s.docs.find(d => d.data().engineerName === registerForm.engineerName);
+      
+      if (found) {
+        setError("EL INGENIERO YA ESTÁ REGISTRADO.");
+        setLoading(false);
+        return;
+      }
+
       await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'engineers'), { ...registerForm, createdAt: new Date().toISOString() });
       handleScreenChange('login');
     } catch (e) { setError("Error."); } finally { setLoading(false); }
