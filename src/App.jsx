@@ -194,6 +194,7 @@ const MenuScreen = ({
   const [showGenerateConfirm, setShowGenerateConfirm] = useState(false);
   const [showResetOSConfirm, setShowResetOSConfirm] = useState(false);
   const [showAddContactForm, setShowAddContactForm] = useState(false);
+  const [contactToDelete, setContactToDelete] = useState(null);
   const [newContact, setNewContact] = useState({ name: '', phone: '', unit: '', email: '' });
   
   const [sparePartsData, setSparePartsData] = useState([]);
@@ -506,7 +507,7 @@ const MenuScreen = ({
                   <div className="flex justify-between items-center mt-2">
                     <p className="text-xs font-black text-purple-700 font-mono">📞 {c.phone}</p>
                     <button 
-                      onClick={() => deleteContact(c.id)} 
+                      onClick={() => setContactToDelete(c)} 
                       className="text-red-500 bg-red-100 w-7 h-7 rounded-full flex items-center justify-center active:scale-90 transition-all"
                     >
                       ✕
@@ -836,6 +837,7 @@ const MenuScreen = ({
       {showResetOSConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-white p-10 rounded-[2.5rem] w-full max-w-xs text-center shadow-2xl animate-popIn"><h3 className="font-black text-2xl mb-4 uppercase text-gray-800">Nueva Orden</h3><p className="text-sm text-gray-400 mb-8 font-bold leading-relaxed">¿Deseas vaciar los campos?</p><div className="flex flex-col gap-3"><button onClick={() => { resetOSForm(); setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black">LIMPIAR</button><button onClick={() => { setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-4 bg-gray-100 text-gray-800 rounded-2xl font-black">MANTENER</button></div></div></div>)}
       {selectedEquipment && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-white p-10 rounded-[2.5rem] w-full max-w-xs text-center shadow-2xl animate-popIn"><h3 className="font-black text-xl mb-4 uppercase text-gray-800">Reportar Equipo</h3><p className="text-sm text-gray-400 mb-8 font-bold leading-relaxed">¿Reportar serie <span className="text-blue-600 font-black">{selectedEquipment.serie}</span>?</p><div className="flex gap-4"><button onClick={() => setSelectedEquipment(null)} className="flex-1 py-4 bg-gray-100 rounded-2xl font-black text-gray-500">NO</button><button onClick={() => { setReportForm({ ...reportForm, serie: selectedEquipment.serie, modelo: selectedEquipment.modelo || '', descripcionEquipo: selectedEquipment.descripcion || '', cliente: selectedEquipment.cliente || '' }); setSelectedEquipment(null); setMenuSubScreen('generarOS'); }} className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
       {showGenerateConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-white p-10 rounded-[2.5rem] w-full max-w-xs text-center shadow-2xl animate-popIn"><h3 className="font-black text-2xl mb-4 text-green-600 uppercase">Confirmar</h3><p className="text-sm text-gray-400 mb-8 font-bold leading-relaxed">La información se enviará a la nube.</p><div className="flex gap-4"><button onClick={() => setShowGenerateConfirm(false)} className="flex-1 py-4 bg-gray-100 rounded-2xl font-black text-gray-500">CERRAR</button><button onClick={() => { setShowGenerateConfirm(false); submitReport(); }} className="flex-1 py-4 bg-green-600 text-white rounded-2xl font-black">ENVIAR</button></div></div></div>)}
+      {contactToDelete && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-white p-10 rounded-[2.5rem] w-full max-w-xs text-center shadow-2xl animate-popIn"><h3 className="font-black text-2xl mb-4 text-red-600 uppercase">Eliminar</h3><p className="text-sm text-gray-400 mb-8 font-bold leading-relaxed">¿Eliminar a <span className="text-gray-800">{contactToDelete.name}</span>?</p><div className="flex gap-4"><button onClick={() => setContactToDelete(null)} className="flex-1 py-4 bg-gray-100 rounded-2xl font-black text-gray-500">NO</button><button onClick={() => { deleteContact(contactToDelete.id); setContactToDelete(null); setMessage("CONTACTO ELIMINADO."); setTimeout(() => setMessage(""), 3000); }} className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
     </div>
   );
 };
