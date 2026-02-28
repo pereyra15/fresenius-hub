@@ -1014,6 +1014,8 @@ export default function App() {
             else if(h.includes('fecha')) obj.createdAt = v; 
             else if(h.includes('reporta') || h.includes('contacto')) obj.reporta = v; 
             else if(h.includes('telefono')) obj.telefono = v; 
+            else if(h.includes('email') || h.includes('correo electrónico') || h.includes('correo electronico') || h.includes('correo')) obj.email = v;
+            else if(h.includes('area') || h.includes('área')) obj.area = v;
             else if(h.includes('observaciones')) obj.observaciones = v; 
             else if(h.includes('firebase')) obj.id = v; 
           });
