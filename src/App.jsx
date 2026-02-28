@@ -187,6 +187,8 @@ const MenuScreen = ({
   documentationSubScreen, setDocumentationSubScreen, currentSparePartView, setCurrentSparePartView
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [contactSearch, setContactSearch] = useState('');
+  const [sparePartsSearch, setSparePartsSearch] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
   const [showGenerateConfirm, setShowGenerateConfirm] = useState(false);
@@ -347,6 +349,7 @@ const MenuScreen = ({
   const fetchSpareParts = async (url, viewName) => {
     setLoadingSpares(true);
     setCurrentSparePartView(viewName);
+    setSparePartsSearch('');
     try {
       const response = await fetch(url);
       const text = await response.text();
@@ -448,10 +451,28 @@ const MenuScreen = ({
         );
 
       case 'contactos':
+        const filteredContacts = contacts.filter(c => {
+          const term = contactSearch.toLowerCase();
+          return (c.name || '').toLowerCase().includes(term) ||
+                 (c.client || '').toLowerCase().includes(term) ||
+                 (c.phone || '').toLowerCase().includes(term);
+        });
+
         return (
           <div className="flex flex-col bg-white border rounded-[2rem] overflow-hidden animate-fadeIn pb-20">
             <div className="p-5 bg-purple-50 border-b flex flex-col gap-3">
                 <div className="flex justify-between items-center"><h3 className="font-black text-purple-900 tracking-tight uppercase">Agenda</h3>{!showAddContactForm && (<button onClick={() => setShowAddContactForm(true)} className="bg-purple-600 text-white text-[10px] font-black py-2 px-5 rounded-full shadow-lg active:scale-90 transition-all uppercase">Nuevo+</button>)}</div>
+                
+                {!showAddContactForm && (
+                  <input 
+                    type="text" 
+                    placeholder="Buscar nombre, hospital o número..." 
+                    className="w-full p-4 border border-purple-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-purple-500 shadow-sm" 
+                    value={contactSearch} 
+                    onChange={e => setContactSearch(e.target.value)} 
+                  />
+                )}
+
                 {showAddContactForm && (
                   <div className="bg-white p-5 rounded-3xl border border-purple-200 shadow-xl animate-slideDown max-h-[500px] overflow-y-auto">
                     <div className="flex justify-between items-center mb-4 text-left uppercase">
@@ -473,20 +494,47 @@ const MenuScreen = ({
                   </div>
                 )}
             </div>
-            <div className="flex-1 overflow-auto p-5 space-y-4 min-h-[400px]">{contacts.map(c => (<div key={c.id} className="p-5 border-l-[10px] border-l-purple-500 border rounded-[1.5rem] bg-gray-50 text-left group shadow-sm"><p className="font-black text-gray-800 text-sm uppercase">{c.name}</p><p className="text-[9px] text-gray-400 font-bold uppercase">{c.client}</p><div className="flex justify-between items-center mt-2"><p className="text-xs font-black text-purple-700 font-mono">📞 {c.phone}</p><button onClick={() => deleteContact(c.id)} className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">✕</button></div></div>))}</div>
+            <div className="flex-1 overflow-auto p-5 space-y-4 min-h-[400px]">
+              {filteredContacts.length > 0 ? filteredContacts.map(c => (
+                <div key={c.id} className="p-5 border-l-[10px] border-l-purple-500 border rounded-[1.5rem] bg-gray-50 text-left group shadow-sm">
+                  <p className="font-black text-gray-800 text-sm uppercase">{c.name}</p>
+                  <p className="text-[9px] text-gray-400 font-bold uppercase">{c.client}</p>
+                  <div className="flex justify-between items-center mt-2">
+                    <p className="text-xs font-black text-purple-700 font-mono">📞 {c.phone}</p>
+                    <button onClick={() => deleteContact(c.id)} className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+                  </div>
+                </div>
+              )) : (
+                <div className="p-10 text-center font-bold text-purple-300 uppercase tracking-widest text-[10px]">Sin resultados</div>
+              )}
+            </div>
           </div>
         );
 
       case 'materialApoyo':
         if (documentationSubScreen === 'SPAREPARTS') {
           if (currentSparePartView) {
+            const filteredSpareParts = sparePartsData.filter(row => {
+              const term = sparePartsSearch.toLowerCase();
+              return Object.values(row).some(val => String(val).toLowerCase().includes(term));
+            });
+
             return (
               <div className="flex flex-col bg-white border rounded-[2rem] overflow-hidden animate-fadeIn pb-20">
-                <div className="p-5 bg-indigo-50 border-b flex items-center justify-between">
-                  <div className="flex items-center">
-                    <button onClick={() => setCurrentSparePartView(null)} className="mr-4 w-8 h-8 flex items-center justify-center bg-white rounded-lg text-indigo-600 shadow-sm">←</button>
-                    <h3 className="font-black text-indigo-900 tracking-tight uppercase text-xs">Refacciones: {currentSparePartView}</h3>
+                <div className="p-5 bg-indigo-50 border-b flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <button onClick={() => { setCurrentSparePartView(null); setSparePartsSearch(''); }} className="mr-4 w-8 h-8 flex items-center justify-center bg-white rounded-lg text-indigo-600 shadow-sm">←</button>
+                      <h3 className="font-black text-indigo-900 tracking-tight uppercase text-xs">Refacciones: {currentSparePartView}</h3>
+                    </div>
                   </div>
+                  <input 
+                    type="text" 
+                    placeholder="Buscar refacción (ej. número de parte o descripción)..." 
+                    className="w-full p-4 border border-indigo-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm" 
+                    value={sparePartsSearch} 
+                    onChange={e => setSparePartsSearch(e.target.value)} 
+                  />
                 </div>
                 <div className="flex-1 overflow-auto p-2 min-h-[400px]">
                   {loadingSpares ? <div className="text-center p-20 animate-pulse text-indigo-300 font-black">Cargando catálogo...</div> : (
@@ -499,7 +547,7 @@ const MenuScreen = ({
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {sparePartsData.map((row, i) => (
+                        {filteredSpareParts.length > 0 ? filteredSpareParts.map((row, i) => (
                           <tr key={i} className="hover:bg-indigo-50 transition-colors">
                             {Object.values(row).map((val, j) => (
                               <td key={j} className="p-2 align-middle">
@@ -535,7 +583,13 @@ const MenuScreen = ({
                               </td>
                             ))}
                           </tr>
-                        ))}
+                        )) : (
+                          <tr>
+                            <td colSpan={Object.keys(sparePartsData[0] || {}).length || 1} className="p-10 text-center font-bold text-indigo-300 uppercase tracking-widest text-[10px]">
+                              Sin resultados
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   )}
