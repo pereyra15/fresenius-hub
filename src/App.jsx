@@ -24,8 +24,14 @@ import {
 // CONFIGURACIÓN DE IMAGEN - ENLACE DIRECTO DE GOOGLE DRIVE
 // ========================================================
 const LOGO_URL = "https://drive.google.com/thumbnail?id=1xl3VUyb0n-2wDlaBO06KRamI13PuWX8z&sz=w600"; 
-// ========================================================
 
+// ========================================================
+// CONFIGURACIÓN DE GOOGLE SHEETS (RESTAURADA Y VERIFICADA)
+// ========================================================
+const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby-qGJlQG_vxJMxqYKK0EBDkFJXLbLi7Gby7fCpej0ZnDgMpT0YsXELWwbvxOVsrTSkhg/exec"; 
+const SHEET_DATA_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqMsPTihy-C9WpValwIav8qpZMi7r710R3M3cOPakcgQ2kEhMJVl1Mw4UlKSt8yB6J2EP_wU5tcm3A/pub?gid=0&single=true&output=csv";
+
+// --- CONFIGURACIÓN DE FIREBASE ---
 const firebaseConfig = typeof __firebase_config !== 'undefined' 
   ? JSON.parse(__firebase_config) 
   : {
@@ -41,8 +47,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'fresenius-hub-v1';
-
-const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby-get/exec"; 
 
 const mockEngineers = [
   'WS06 JORGE VELAZQUEZ', 'WS07 EDGAR NUÑO', 'WS09 ZAHIRA ISLAS',
@@ -285,6 +289,7 @@ const MenuScreen = ({
         engineerName: loginForm.engineerName
       });
 
+      // SINCRONIZACIÓN CON GOOGLE SHEETS
       if (GOOGLE_SHEETS_URL) {
         try {
           await fetch(GOOGLE_SHEETS_URL, { 
@@ -327,7 +332,7 @@ const MenuScreen = ({
         try {
           await updateDoc(orderRef, { status: 'Cerrado', closedAt: new Date().toISOString() });
         } catch (firebaseErr) {
-          console.warn("El documento no se encontró en la base de datos de Firebase.", firebaseErr);
+          console.warn("Documento no encontrado en Firebase, sincronizando con Sheet únicamente.");
         }
       }
       
@@ -349,7 +354,7 @@ const MenuScreen = ({
       setMessage("ORDEN FINALIZADA Y SINCRONIZADA.");
       setTimeout(() => setMessage(""), 3000);
     } catch (e) {
-      setError("Cerrado localmente. Error general al sincronizar.");
+      setError("Error general al sincronizar.");
     } finally {
       setClosingOrder(false);
     }
@@ -377,20 +382,15 @@ const MenuScreen = ({
 
   const handleSaveContact = async () => {
     if (!newContact.name || !newContact.phone || !newContact.unit || !newContact.email) {
-      setError("TODOS LOS CAMPOS DE LA AGENDA SON OBLIGATORIOS.");
-      setTimeout(() => setError(""), 3000);
+      setError("TODOS LOS CAMPOS SON OBLIGATORIOS.");
       return;
     }
-    
     try {
       await addContact({...newContact, client: newContact.unit, role: 'Contacto'});
       setNewContact({name:'', phone:'', unit:'', email:''});
       setShowAddContactForm(false);
       setMessage("CONTACTO GUARDADO.");
-      setTimeout(() => setMessage(""), 3000);
-    } catch (e) {
-      setError("Error al guardar contacto.");
-    }
+    } catch (e) { setError("Error al guardar contacto."); }
   };
 
   const renderContent = () => {
@@ -625,7 +625,7 @@ const MenuScreen = ({
         );
 
       case 'ordenesAsignadas':
-        const myOrders = sheetOrders.filter(so => so.engineerName === loginForm.engineerName);
+        const myOrders = sheetOrders.filter(so => (so.engineerName || '').trim() === (loginForm.engineerName || '').trim());
         
         if (selectedOrderDetails) {
           const so = selectedOrderDetails;
@@ -665,9 +665,6 @@ const MenuScreen = ({
                 <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
                   <p className="text-[8px] font-black text-gray-400 uppercase mb-2">Falla Reportada</p>
                   <p className="text-[11px] font-bold text-gray-700 leading-relaxed italic">"{so.falla}"</p>
-                  {so.descripcionFalla && (
-                    <p className="mt-2 text-[10px] font-black text-blue-600">Cat: {so.codigoFalla} - {so.descripcionFalla}</p>
-                  )}
                 </div>
 
                 {(so.status && so.status.toLowerCase().includes('abierto')) && (
@@ -775,7 +772,6 @@ export default function App() {
     setMenuSubScreen(ms);
     setDocumentationSubScreen(ds);
     setCurrentSparePartView(csv);
-    
     window.history.pushState({ screen: s, menuSub: ms, docSub: ds, spareView: csv }, '');
   };
 
@@ -784,9 +780,6 @@ export default function App() {
       setRegisterForm({ engineerName: '', phone: '', email: '', password: '' });
     } else if (newScreen === 'login') {
       setLoginForm({ engineerName: '', password: '' });
-    } else if (newScreen === 'landing') {
-      setLoginForm({ engineerName: '', password: '' });
-      setRegisterForm({ engineerName: '', phone: '', email: '', password: '' });
     }
     navigate(newScreen);
   };
@@ -821,7 +814,7 @@ export default function App() {
         } else { 
           await signInAnonymously(auth); 
         }
-      } catch (e) { console.error("Error de autenticación", e); }
+      } catch (e) { console.error("Auth Error", e); }
     };
     initAuth();
     const unsubscribe = onAuthStateChanged(auth, u => {
@@ -840,7 +833,7 @@ export default function App() {
         const headers = rows[0].split(',').map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
         const data = rows.slice(1).filter(r => r.trim()).map((row, idx) => {
           const vals = []; let curr = '', inQ = false;
-          for (let c of row) { if(c === '"') inQ = !inQ; else if(c === ',' && !inQ) { vals.push(curr.trim().replace(/^"|"$/g, '')); curr = ''; } else curr += c; }
+          for (let c of row) { if(c === '"') inQ = !inQ; else if(c === ',' && !inQ) { vals.push(curr.trim().replace(/^"|"$/g, '')); current = ''; } else curr += c; }
           vals.push(curr.trim().replace(/^"|"$/g, ''));
           const obj = { id: idx };
           headers.forEach((h, i) => { 
@@ -854,15 +847,16 @@ export default function App() {
           return obj;
         });
         setEquipment(data);
-      } catch (e) { console.error("Error al obtener equipo", e); }
+      } catch (e) { console.error("Equip Error", e); }
     };
     fetchEquipment();
   }, []);
 
   useEffect(() => {
     const fetchSheetOrders = async () => {
+      if (!user) return;
       try {
-        const resp = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRqMsPTihy-C9WpValwIav8qpZMi7r710R3M3cOPakcgQ2kEhMJVl1Mw4UlKSt8yB6J2EP_wU5tcm3A/pub?gid=0&single=true&output=csv');
+        const resp = await fetch(SHEET_DATA_URL);
         const text = await resp.text();
         const rows = text.split('\n');
         const headers = rows[0].split(',').map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
@@ -882,17 +876,15 @@ export default function App() {
             else if(h.includes('tipo')) obj.tipoOS = v; 
             else if(h.includes('fecha')) obj.createdAt = v; 
             else if(h.includes('reporta') || h.includes('contacto')) obj.reporta = v; 
-            else if(h.includes('telefono')) obj.telefono = v; 
-            else if(h.includes('observaciones')) obj.observaciones = v; 
             else if(h.includes('firebase')) obj.id = v; 
           });
           if (!obj.id) obj.id = `sheet-${idx}`;
           return obj;
         });
         setSheetOrders(data);
-      } catch (e) { console.error("Error al obtener órdenes de Sheets", e); }
+      } catch (e) { console.error("Sheet Fetch Error", e); }
     };
-    if (user) { fetchSheetOrders(); }
+    fetchSheetOrders();
   }, [user]);
 
   useEffect(() => {
