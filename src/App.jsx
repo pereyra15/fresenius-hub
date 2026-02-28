@@ -436,7 +436,7 @@ const MenuScreen = ({
             <Input label="Serie / SN" name="serie" value={reportForm.serie} onChange={handleReportChange} />
             <Input label="Modelo" name="modelo" value={reportForm.modelo} onChange={handleReportChange} readOnly />
             <Input label="Hospital" name="cliente" value={reportForm.cliente} onChange={handleReportChange} readOnly />
-            <Input label="Área" name="area" value={reportForm.area} onChange={handleReportChange} placeholder="Ej. Banco de Sangre, UCI..." />
+            <Select label="Área" name="area" value={reportForm.area} onChange={handleReportChange} options={['Recolección', 'Fraccionamiento', 'Aféresis']} />
             <TextArea label="Falla Reportada" name="falla" value={reportForm.falla} onChange={handleReportChange} />
             <Input label="Reporta" name="reporta" value={reportForm.reporta} onChange={handleReportChange} list="contactos-agenda" />
             <Input label="Teléfono" name="telefono" value={reportForm.telefono} onChange={handleReportChange} />
