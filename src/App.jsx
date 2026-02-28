@@ -436,9 +436,11 @@ const MenuScreen = ({
             <Input label="Serie / SN" name="serie" value={reportForm.serie} onChange={handleReportChange} />
             <Input label="Modelo" name="modelo" value={reportForm.modelo} onChange={handleReportChange} readOnly />
             <Input label="Hospital" name="cliente" value={reportForm.cliente} onChange={handleReportChange} readOnly />
+            <Input label="Área" name="area" value={reportForm.area} onChange={handleReportChange} placeholder="Ej. Banco de Sangre, UCI..." />
             <TextArea label="Falla Reportada" name="falla" value={reportForm.falla} onChange={handleReportChange} />
             <Input label="Reporta" name="reporta" value={reportForm.reporta} onChange={handleReportChange} list="contactos-agenda" />
             <Input label="Teléfono" name="telefono" value={reportForm.telefono} onChange={handleReportChange} />
+            <Input label="Correo Electrónico" name="email" type="email" value={reportForm.email} onChange={handleReportChange} placeholder="correo@ejemplo.com" />
             <TextArea label="Observaciones" name="observaciones" value={reportForm.observaciones} onChange={handleReportChange} rows={2} />
             <button onClick={() => setShowGenerateConfirm(true)} disabled={loadingReport} className="w-full bg-green-600 text-white font-black py-5 rounded-2xl mt-8 shadow-xl hover:bg-green-700 active:scale-95 transition-all uppercase">{loadingReport ? 'Enviando...' : 'Generar Reporte'}</button>
           </div>
