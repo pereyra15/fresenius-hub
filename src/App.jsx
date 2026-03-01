@@ -858,6 +858,13 @@ export default function App() {
   const [registerForm, setRegisterForm] = useState({ engineerName: '', phone: '', email: '', password: '' });
   const [loginForm, setLoginForm] = useState({ engineerName: '', password: '' });
 
+  // Referencia para saber siempre en qué pantalla estamos actualmente
+  const stateRef = useRef({ screen, menuSubScreen, documentationSubScreen, currentSparePartView });
+
+  useEffect(() => {
+    stateRef.current = { screen, menuSubScreen, documentationSubScreen, currentSparePartView };
+  }, [screen, menuSubScreen, documentationSubScreen, currentSparePartView]);
+
   // --- CONFIGURACIÓN DE ICONO Y PWA PARA EL CELULAR ---
   useEffect(() => {
     document.title = "Fresenius Hub";
@@ -931,6 +938,19 @@ export default function App() {
     window.history.replaceState({ screen: 'landing', menuSub: 'dashboard', docSub: null, spareView: null }, '');
 
     const handlePopState = (event) => {
+      const current = stateRef.current;
+
+      // Bloquear retroceso en Pantalla Inicial (landing) y Menú Principal (dashboard)
+      if (current.screen === 'landing' || (current.screen === 'menu' && current.menuSubScreen === 'dashboard')) {
+        window.history.pushState({ 
+          screen: current.screen, 
+          menuSub: current.menuSubScreen, 
+          docSub: current.documentationSubScreen, 
+          spareView: current.currentSparePartView 
+        }, '');
+        return;
+      }
+
       if (event.state) {
         const { screen, menuSub, docSub, spareView } = event.state;
         setScreen(screen);
