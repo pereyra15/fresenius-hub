@@ -72,10 +72,10 @@ const fallaMapping = [
 ];
 
 const Input = ({ label, name, type = 'text', value, onChange, maxLength, inputMode, readOnly, placeholder, list }) => (
-  <div className="mb-4 text-left">
-    <label className="block text-gray-300 text-[10px] font-black mb-1 uppercase tracking-wider">{label}</label>
+  <div className="mb-5 text-left">
+    <label className="block text-gray-300 text-xs font-black mb-1.5 uppercase tracking-wider">{label}</label>
     <input
-      className={`w-full p-4 border rounded-2xl text-sm transition-all focus:ring-2 focus:ring-blue-500 outline-none shadow-sm ${readOnly ? 'bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed' : 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'}`}
+      className={`w-full p-4 border rounded-2xl text-base transition-all focus:ring-2 focus:ring-blue-500 outline-none shadow-sm ${readOnly ? 'bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed' : 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'}`}
       type={type} name={name} value={value} onChange={onChange} maxLength={maxLength} 
       inputMode={inputMode} readOnly={readOnly} placeholder={placeholder} list={list}
     />
@@ -83,20 +83,20 @@ const Input = ({ label, name, type = 'text', value, onChange, maxLength, inputMo
 );
 
 const TextArea = ({ label, name, value, onChange, rows = 3, placeholder, readOnly }) => (
-  <div className="mb-4 text-left">
-    <label className="block text-gray-300 text-[10px] font-black mb-1 uppercase tracking-wider">{label}</label>
+  <div className="mb-5 text-left">
+    <label className="block text-gray-300 text-xs font-black mb-1.5 uppercase tracking-wider">{label}</label>
     <textarea
-      className={`w-full p-4 border rounded-2xl text-sm transition-all focus:ring-2 focus:ring-blue-500 outline-none shadow-sm ${readOnly ? 'bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed' : 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'}`}
+      className={`w-full p-4 border rounded-2xl text-base transition-all focus:ring-2 focus:ring-blue-500 outline-none shadow-sm ${readOnly ? 'bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed' : 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'}`}
       name={name} value={value} onChange={onChange} rows={rows} placeholder={placeholder} readOnly={readOnly}
     />
   </div>
 );
 
 const Select = ({ label, name, value, onChange, options, placeholder = "Seleccionar..." }) => (
-  <div className="mb-4 text-left">
-    <label className="block text-gray-300 text-[10px] font-black mb-1 uppercase tracking-wider">{label}</label>
+  <div className="mb-5 text-left">
+    <label className="block text-gray-300 text-xs font-black mb-1.5 uppercase tracking-wider">{label}</label>
     <select
-      className={`w-full p-4 border rounded-2xl text-sm bg-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none border-gray-600 ${value === '' ? 'text-gray-400' : 'text-white'}`}
+      className={`w-full p-4 border rounded-2xl text-base bg-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none border-gray-600 ${value === '' ? 'text-gray-400' : 'text-white'}`}
       name={name} value={value} onChange={onChange}
     >
       <option value="" disabled>{placeholder}</option>
@@ -110,15 +110,15 @@ const MenuButton = ({ label, subScreenId, svgIcon, setMenuSubScreen, menuSubScre
   return (
     <button
       onClick={() => setMenuSubScreen(subScreenId)}
-      className={`flex items-center p-5 rounded-[1.5rem] transition-all transform hover:scale-[1.02] shadow-lg w-full border-2
+      className={`flex items-center p-6 rounded-[1.5rem] transition-all transform hover:scale-[1.02] shadow-lg w-full border-2
         ${isActive ? 'bg-blue-600 text-white shadow-blue-400/20 border-blue-600' : 'bg-gray-800 text-gray-200 hover:bg-gray-700 border-gray-700'}`}
     >
-      <div className={`mr-4 ${isActive ? 'text-white' : 'text-blue-400'}`}>
-        <div className="w-8 h-8">{svgIcon}</div>
+      <div className={`mr-5 ${isActive ? 'text-white' : 'text-blue-400'}`}>
+        <div className="w-10 h-10">{svgIcon}</div>
       </div>
-      <span className="font-black text-lg text-left flex-1 tracking-tight">{label}</span>
+      <span className="font-black text-xl text-left flex-1 tracking-tight">{label}</span>
       <div className={`ml-2 ${isActive ? 'text-blue-200' : 'text-gray-500'}`}>
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
       </div>
     </button>
   );
@@ -138,45 +138,45 @@ const ContactosSVG = () => (
 );
 
 const LandingScreen = ({ setScreen }) => (
-  <div className="flex flex-col gap-6 animate-fadeIn pb-10">
-    <div className="text-center mb-10">
-      <img src="https://lh3.googleusercontent.com/d/1xl3VUyb0n-2wDlaBO06KRamI13PuWX8z" alt="Logo Hub" className="w-[76px] h-[76px] object-cover rounded-full mx-auto mb-4 shadow-sm bg-gray-800" />
-      <h1 className="text-5xl font-black text-blue-400 tracking-tighter">FRESENIUS</h1>
-      <p className="text-[10px] font-black text-gray-400 tracking-[0.4em] mt-2 uppercase">Engineering Hub</p>
+  <div className="flex flex-col gap-6 animate-fadeIn pb-10 mt-4">
+    <div className="text-center mb-12">
+      <img src="https://lh3.googleusercontent.com/d/1xl3VUyb0n-2wDlaBO06KRamI13PuWX8z" alt="Logo Hub" className="w-[100px] h-[100px] object-cover rounded-full mx-auto mb-6 shadow-sm bg-gray-800" />
+      <h1 className="text-6xl font-black text-blue-400 tracking-tighter">FRESENIUS</h1>
+      <p className="text-xs font-black text-gray-400 tracking-[0.4em] mt-3 uppercase">Engineering Hub</p>
     </div>
     <button onClick={() => setScreen('register')} className="p-8 bg-gray-800 border-2 border-gray-700 rounded-[2.5rem] shadow-xl hover:border-blue-500 transition-all group flex items-center gap-6">
       <div className="w-16 h-16 bg-gray-700 rounded-2xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg></div>
-      <div className="text-left"><span className="block font-black text-white text-lg uppercase tracking-tight leading-none">Registrarse</span><span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">Crear nueva cuenta</span></div>
+      <div className="text-left"><span className="block font-black text-white text-xl uppercase tracking-tight leading-none">Registrarse</span><span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-2">Crear nueva cuenta</span></div>
     </button>
     <button onClick={() => setScreen('login')} className="p-8 bg-blue-600 rounded-[2.5rem] shadow-xl hover:bg-blue-700 transition-all group flex items-center gap-6">
       <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg></div>
-      <div className="text-left"><span className="block font-black text-white text-lg uppercase tracking-tight leading-none">Ingresar</span><span className="text-[9px] font-bold text-blue-200 uppercase tracking-widest mt-1">Acceso restringido</span></div>
+      <div className="text-left"><span className="block font-black text-white text-xl uppercase tracking-tight leading-none">Ingresar</span><span className="text-[11px] font-bold text-blue-200 uppercase tracking-widest mt-2">Acceso restringido</span></div>
     </button>
   </div>
 );
 
 const RegisterScreen = ({ form, onChange, onSubmit, loading, setScreen }) => (
   <div className="animate-fadeIn pb-10">
-    <div className="flex items-center gap-4 mb-8"><button onClick={() => setScreen('landing')} className="w-10 h-10 rounded-xl bg-gray-700 flex items-center justify-center text-gray-300 hover:bg-gray-600">←</button><h2 className="text-2xl font-black text-white tracking-tighter uppercase">Registro</h2></div>
-    <div className="space-y-1">
+    <div className="flex items-center gap-4 mb-10"><button onClick={() => setScreen('landing')} className="w-12 h-12 rounded-xl bg-gray-700 flex items-center justify-center text-gray-300 hover:bg-gray-600 text-xl">←</button><h2 className="text-3xl font-black text-white tracking-tighter uppercase">Registro</h2></div>
+    <div className="space-y-2">
       <Select label="Nombre de Ingeniero *" name="engineerName" value={form.engineerName} onChange={onChange} options={mockEngineers} />
       <Input label="Correo Electrónico *" name="email" type="email" value={form.email} onChange={onChange} placeholder="ejemplo@fmc-ag.com" />
       <Input label="Teléfono de Contacto *" name="phone" value={form.phone} onChange={onChange} placeholder="5512345678" />
       <Input label="Contraseña (PIN) *" name="password" type="password" value={form.password} onChange={onChange} maxLength={6} placeholder="••••••" />
-      <button onClick={onSubmit} disabled={loading} className="w-full bg-blue-600 text-white font-black py-5 rounded-2xl mt-4 shadow-xl active:scale-95 transition-all uppercase disabled:opacity-50">{loading ? 'Procesando...' : 'Crear Cuenta'}</button>
-      <p className="text-[8px] font-black text-gray-400 uppercase mt-4 text-center tracking-widest">* Todos los campos son obligatorios</p>
+      <button onClick={onSubmit} disabled={loading} className="w-full bg-blue-600 text-white text-lg font-black py-5 rounded-2xl mt-6 shadow-xl active:scale-95 transition-all uppercase disabled:opacity-50">{loading ? 'Procesando...' : 'Crear Cuenta'}</button>
+      <p className="text-[10px] font-black text-gray-400 uppercase mt-4 text-center tracking-widest">* Todos los campos son obligatorios</p>
     </div>
   </div>
 );
 
 const LoginScreen = ({ form, onChange, onSubmit, loading, setScreen }) => (
   <div className="animate-fadeIn pb-10">
-    <div className="flex items-center gap-4 mb-8"><button onClick={() => setScreen('landing')} className="w-10 h-10 rounded-xl bg-gray-700 flex items-center justify-center text-gray-300 hover:bg-gray-600">←</button><h2 className="text-2xl font-black text-white tracking-tighter uppercase">Ingreso</h2></div>
-    <div className="space-y-1">
+    <div className="flex items-center gap-4 mb-10"><button onClick={() => setScreen('landing')} className="w-12 h-12 rounded-xl bg-gray-700 flex items-center justify-center text-gray-300 hover:bg-gray-600 text-xl">←</button><h2 className="text-3xl font-black text-white tracking-tighter uppercase">Ingreso</h2></div>
+    <div className="space-y-2">
       <Select label="Seleccionar Ingeniero *" name="engineerName" value={form.engineerName} onChange={onChange} options={mockEngineers} />
       <Input label="PIN de Acceso *" name="password" type="password" value={form.password} onChange={onChange} maxLength={6} placeholder="••••••" />
-      <button onClick={onSubmit} disabled={loading} className="w-full bg-blue-600 text-white font-black py-5 rounded-2xl mt-8 shadow-xl active:scale-95 transition-all uppercase disabled:opacity-50">{loading ? 'Verificando...' : 'Entrar'}</button>
-      <p className="text-[8px] font-black text-gray-400 uppercase mt-4 text-center tracking-widest">* PIN e Ingeniero son obligatorios</p>
+      <button onClick={onSubmit} disabled={loading} className="w-full bg-blue-600 text-white text-lg font-black py-5 rounded-2xl mt-8 shadow-xl active:scale-95 transition-all uppercase disabled:opacity-50">{loading ? 'Verificando...' : 'Entrar'}</button>
+      <p className="text-[10px] font-black text-gray-400 uppercase mt-4 text-center tracking-widest">* PIN e Ingeniero son obligatorios</p>
     </div>
   </div>
 );
@@ -398,16 +398,16 @@ const MenuScreen = ({
         });
         return (
           <div className="bg-gray-800 rounded-[2rem] shadow-sm border border-gray-700 flex flex-col overflow-hidden animate-fadeIn">
-            <div className="p-4 bg-gray-900 border-b border-gray-700 sticky top-0 z-10"><input type="text" placeholder="Buscar por Serie o Hospital..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
+            <div className="p-4 bg-gray-900 border-b border-gray-700 sticky top-0 z-10"><input type="text" placeholder="Buscar por Serie o Hospital..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
             <div className="flex-1 overflow-auto text-xs min-h-[400px]">
               <table className="w-full">
                 <thead className="bg-gray-900 sticky top-0 font-black text-gray-400"><tr><th className="p-4 text-left">SERIE</th><th className="p-4 text-left">EQUIPO</th><th className="p-4 text-center">ST</th></tr></thead>
                 <tbody className="divide-y divide-gray-700 text-left">
                   {filtered.length > 0 ? filtered.map(item => (
                     <tr key={item.id} onClick={() => setSelectedEquipment(item)} className="hover:bg-gray-700 cursor-pointer transition-colors active:bg-gray-600">
-                      <td className="p-4 font-mono font-black text-blue-400">{item.serie}</td>
-                      <td className="p-4"><div className="font-black text-white uppercase text-[10px]">{item.modelo}</div><div className="text-[9px] text-gray-400 uppercase tracking-tighter truncate max-w-[120px]">{item.cliente}</div></td>
-                      <td className="p-4 text-center text-lg">{sheetOrders.some(so => so.serie === item.serie && so.status && so.status.toLowerCase().includes('abierto')) ? '🔴' : '🟢'}</td>
+                      <td className="p-4 font-mono font-black text-blue-400 text-sm">{item.serie}</td>
+                      <td className="p-4"><div className="font-black text-white uppercase text-[11px]">{item.modelo}</div><div className="text-[10px] text-gray-400 uppercase tracking-tighter truncate max-w-[140px]">{item.cliente}</div></td>
+                      <td className="p-4 text-center text-xl">{sheetOrders.some(so => so.serie === item.serie && so.status && so.status.toLowerCase().includes('abierto')) ? '🔴' : '🟢'}</td>
                     </tr>
                   )) : (<tr><td colSpan="3" className="p-10 text-center font-bold text-gray-500">Sin equipos asignados</td></tr>)}
                 </tbody>
@@ -418,23 +418,23 @@ const MenuScreen = ({
 
       case 'reporteEquipos':
         return (
-          <div className="grid gap-5 animate-fadeIn pb-20">
+          <div className="grid gap-6 animate-fadeIn pb-20">
             <div className="bg-gray-800 p-6 rounded-3xl border border-gray-700 mb-2">
-              <h4 className="font-black text-blue-300 text-xs uppercase tracking-widest mb-1">Métricas Rápidas</h4>
+              <h4 className="font-black text-blue-300 text-sm uppercase tracking-widest mb-2">Métricas Rápidas</h4>
               <div className="flex gap-4">
-                <div className="flex-1"><span className="block text-2xl font-black text-white">{sheetOrders.filter(so => so.engineerName === loginForm.engineerName && so.status && so.status.toLowerCase().includes('abierto')).length}</span><span className="text-[8px] font-black text-blue-400 uppercase">Abiertas</span></div>
-                <div className="flex-1"><span className="block text-2xl font-black text-green-400">{sheetOrders.filter(so => so.engineerName === loginForm.engineerName && so.status && so.status.toLowerCase().includes('cerrado')).length}</span><span className="text-[8px] font-black text-green-500 uppercase">Cerradas</span></div>
+                <div className="flex-1"><span className="block text-3xl font-black text-white">{sheetOrders.filter(so => so.engineerName === loginForm.engineerName && so.status && so.status.toLowerCase().includes('abierto')).length}</span><span className="text-[10px] font-black text-blue-400 uppercase">Abiertas</span></div>
+                <div className="flex-1"><span className="block text-3xl font-black text-green-400">{sheetOrders.filter(so => so.engineerName === loginForm.engineerName && so.status && so.status.toLowerCase().includes('cerrado')).length}</span><span className="text-[10px] font-black text-green-500 uppercase">Cerradas</span></div>
               </div>
             </div>
-            <button onClick={() => setMenuSubScreen('ordenesAsignadas')} className="p-10 bg-gray-800 border-2 border-gray-700 rounded-[2.5rem] font-black text-white shadow-xl flex flex-col items-center gap-3 active:scale-95 transition-all"><span className="text-5xl">📋</span> MIS ÓRDENES</button>
-            <button onClick={() => setShowResetOSConfirm(true)} className="p-10 bg-blue-600 rounded-[2.5rem] font-black text-white shadow-xl flex flex-col items-center gap-3 active:scale-95 transition-all"><span className="text-5xl">➕</span> NUEVA OS</button>
+            <button onClick={() => setMenuSubScreen('ordenesAsignadas')} className="p-10 bg-gray-800 border-2 border-gray-700 rounded-[2.5rem] font-black text-white text-xl shadow-xl flex flex-col items-center gap-3 active:scale-95 transition-all"><span className="text-6xl">📋</span> MIS ÓRDENES</button>
+            <button onClick={() => setShowResetOSConfirm(true)} className="p-10 bg-blue-600 rounded-[2.5rem] font-black text-white text-xl shadow-xl flex flex-col items-center gap-3 active:scale-95 transition-all"><span className="text-6xl">➕</span> NUEVA OS</button>
           </div>
         );
 
       case 'generarOS':
         return (
           <div className="p-6 bg-gray-800 border border-gray-700 rounded-[2rem] overflow-y-auto animate-fadeIn text-left shadow-sm pb-20">
-            <h3 className="text-2xl font-black mb-8 text-white tracking-tighter border-b border-gray-700 pb-4 uppercase">Nueva Orden</h3>
+            <h3 className="text-3xl font-black mb-8 text-white tracking-tighter border-b border-gray-700 pb-4 uppercase">Nueva Orden</h3>
             <datalist id="contactos-agenda">{contacts.map(c => <option key={c.id} value={c.name}>{c.client}</option>)}</datalist>
             <Select label="Tipo de Servicio" name="tipoOS" value={reportForm.tipoOS} onChange={handleReportChange} options={['ZMXC (MTTO CORRECTIVO)', 'ZMXP (MTTO PREVENTIVO)', 'ZMXI (INSTALACIÓN)', 'ZMXA (ASESORÍA)']} />
             <Input label="Serie / SN" name="serie" value={reportForm.serie} onChange={handleReportChange} />
@@ -447,7 +447,7 @@ const MenuScreen = ({
             <Input label="Teléfono" name="telefono" value={reportForm.telefono} onChange={handleReportChange} />
             <Input label="Correo Electrónico" name="email" type="email" value={reportForm.email} onChange={handleReportChange} placeholder="correo@ejemplo.com" />
             <TextArea label="Observaciones" name="observaciones" value={reportForm.observaciones} onChange={handleReportChange} rows={2} />
-            <button onClick={() => setShowGenerateConfirm(true)} disabled={loadingReport} className="w-full bg-green-600 text-white font-black py-5 rounded-2xl mt-8 shadow-xl hover:bg-green-700 active:scale-95 transition-all uppercase">{loadingReport ? 'Enviando...' : 'Generar Reporte'}</button>
+            <button onClick={() => setShowGenerateConfirm(true)} disabled={loadingReport} className="w-full bg-green-600 text-white text-lg font-black py-5 rounded-2xl mt-8 shadow-xl hover:bg-green-700 active:scale-95 transition-all uppercase">{loadingReport ? 'Enviando...' : 'Generar Reporte'}</button>
           </div>
         );
 
@@ -461,24 +461,24 @@ const MenuScreen = ({
 
         return (
           <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] overflow-hidden animate-fadeIn pb-20">
-            <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-3">
-                <div className="flex justify-between items-center"><h3 className="font-black text-purple-300 tracking-tight uppercase">Agenda</h3>{!showAddContactForm && (<button onClick={() => setShowAddContactForm(true)} className="bg-purple-600 text-white text-[10px] font-black py-2 px-5 rounded-full shadow-lg active:scale-90 transition-all uppercase">Nuevo+</button>)}</div>
+            <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4">
+                <div className="flex justify-between items-center"><h3 className="text-xl font-black text-purple-300 tracking-tight uppercase">Agenda</h3>{!showAddContactForm && (<button onClick={() => setShowAddContactForm(true)} className="bg-purple-600 text-white text-[11px] font-black py-2 px-5 rounded-full shadow-lg active:scale-90 transition-all uppercase">Nuevo+</button>)}</div>
                 
                 {!showAddContactForm && (
                   <input 
                     type="text" 
                     placeholder="Buscar nombre, hospital o número..." 
-                    className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-sm outline-none focus:ring-2 focus:ring-purple-500 shadow-sm" 
+                    className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-purple-500 shadow-sm" 
                     value={contactSearch} 
                     onChange={e => setContactSearch(e.target.value)} 
                   />
                 )}
 
                 {showAddContactForm && (
-                  <div className="bg-gray-800 p-5 rounded-3xl border border-gray-700 shadow-xl animate-slideDown max-h-[500px] overflow-y-auto">
-                    <div className="flex justify-between items-center mb-4 text-left uppercase">
-                      <h4 className="text-[10px] font-black text-purple-400">Registro Clínico</h4>
-                      <button className="text-gray-300 hover:text-white" onClick={() => setShowAddContactForm(false)}>✕</button>
+                  <div className="bg-gray-800 p-6 rounded-3xl border border-gray-700 shadow-xl animate-slideDown max-h-[500px] overflow-y-auto mt-2">
+                    <div className="flex justify-between items-center mb-6 text-left uppercase">
+                      <h4 className="text-xs font-black text-purple-400">Registro Clínico</h4>
+                      <button className="text-gray-300 hover:text-white text-xl" onClick={() => setShowAddContactForm(false)}>✕</button>
                     </div>
                     <div className="space-y-4">
                         <Input label="Nombre Completo" placeholder="NOMBRE" value={newContact.name} onChange={e => setNewContact({...newContact, name: e.target.value})} />
@@ -487,7 +487,7 @@ const MenuScreen = ({
                         <Input label="Correo Electrónico" placeholder="EMAIL" type="email" value={newContact.email} onChange={e => setNewContact({...newContact, email: e.target.value})} />
                         <button 
                           onClick={handleSaveContact} 
-                          className="w-full bg-purple-600 text-white font-black py-4 rounded-xl uppercase shadow-md active:scale-95 transition-all"
+                          className="w-full bg-purple-600 text-white text-lg font-black py-4 rounded-xl uppercase shadow-md active:scale-95 transition-all mt-4"
                         >
                           Guardar Contacto
                         </button>
@@ -497,21 +497,21 @@ const MenuScreen = ({
             </div>
             <div className="flex-1 overflow-auto p-5 space-y-4 min-h-[400px]">
               {filteredContacts.length > 0 ? filteredContacts.map(c => (
-                <div key={c.id} className="p-5 border-l-[10px] border-l-purple-500 border border-gray-700 rounded-[1.5rem] bg-gray-800 text-left group shadow-sm">
-                  <p className="font-black text-white text-sm uppercase">{c.name}</p>
-                  <p className="text-[9px] text-gray-400 font-bold uppercase">{c.client}</p>
-                  <div className="flex justify-between items-center mt-2">
-                    <p className="text-xs font-black text-purple-400 font-mono">📞 {c.phone}</p>
+                <div key={c.id} className="p-6 border-l-[12px] border-l-purple-500 border border-gray-700 rounded-[1.5rem] bg-gray-800 text-left group shadow-sm">
+                  <p className="font-black text-white text-base uppercase">{c.name}</p>
+                  <p className="text-[11px] text-gray-400 font-bold uppercase mt-1">{c.client}</p>
+                  <div className="flex justify-between items-center mt-3">
+                    <p className="text-sm font-black text-purple-400 font-mono">📞 {c.phone}</p>
                     <button 
                       onClick={() => setContactToDelete(c)} 
-                      className="text-red-400 bg-red-900/50 w-7 h-7 rounded-full flex items-center justify-center active:scale-90 transition-all hover:bg-red-900"
+                      className="text-red-400 bg-red-900/50 w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-all hover:bg-red-900 text-lg"
                     >
                       ✕
                     </button>
                   </div>
                 </div>
               )) : (
-                <div className="p-10 text-center font-bold text-gray-500 uppercase tracking-widest text-[10px]">Sin resultados</div>
+                <div className="p-10 text-center font-bold text-gray-500 uppercase tracking-widest text-xs">Sin resultados</div>
               )}
             </div>
           </div>
@@ -527,28 +527,28 @@ const MenuScreen = ({
 
             return (
               <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] overflow-hidden animate-fadeIn pb-20">
-                <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-3">
+                <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <button onClick={() => { setCurrentSparePartView(null); setSparePartsSearch(''); }} className="mr-4 w-8 h-8 flex items-center justify-center bg-gray-700 rounded-lg text-indigo-400 hover:bg-gray-600 shadow-sm">←</button>
-                      <h3 className="font-black text-indigo-300 tracking-tight uppercase text-xs">Refacciones: {currentSparePartView}</h3>
+                      <button onClick={() => { setCurrentSparePartView(null); setSparePartsSearch(''); }} className="mr-4 w-10 h-10 flex items-center justify-center bg-gray-700 rounded-lg text-indigo-400 hover:bg-gray-600 shadow-sm text-lg">←</button>
+                      <h3 className="font-black text-indigo-300 tracking-tight uppercase text-sm">Refacciones: {currentSparePartView}</h3>
                     </div>
                   </div>
                   <input 
                     type="text" 
                     placeholder="Buscar refacción (ej. número de parte o descripción)..." 
-                    className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm" 
+                    className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm" 
                     value={sparePartsSearch} 
                     onChange={e => setSparePartsSearch(e.target.value)} 
                   />
                 </div>
                 <div className="flex-1 overflow-auto p-2 min-h-[400px]">
                   {loadingSpares ? <div className="text-center p-20 animate-pulse text-indigo-400 font-black">Cargando catálogo...</div> : (
-                    <table className="w-full text-[9px] text-left border-collapse">
+                    <table className="w-full text-xs text-left border-collapse">
                       <thead className="bg-gray-900 sticky top-0">
                         <tr>
                           {sparePartsData[0] && Object.keys(sparePartsData[0]).map(k => (
-                            <th key={k} className="p-2 border-b border-gray-700 font-black text-gray-400 uppercase tracking-tighter">{k}</th>
+                            <th key={k} className="p-3 border-b border-gray-700 font-black text-gray-400 uppercase tracking-tighter">{k}</th>
                           ))}
                         </tr>
                       </thead>
@@ -556,11 +556,11 @@ const MenuScreen = ({
                         {filteredSpareParts.length > 0 ? filteredSpareParts.map((row) => (
                           <tr key={row._id} className="hover:bg-gray-700 transition-colors">
                             {Object.values(row).map((val, j) => (
-                              <td key={j} className="p-2 align-middle text-gray-200">
+                              <td key={j} className="p-3 align-middle text-gray-200">
                                 {typeof val === 'string' && val.includes('drive.google.com') ? (
                                   <div className="flex flex-col gap-2">
                                     <span className="text-gray-300 font-medium">{val.split('https://')[0]}</span>
-                                    <div className="relative group w-16 h-16">
+                                    <div className="relative group w-20 h-20">
                                       {(() => {
                                         const idMatch = val.match(/\/d\/([a-zA-Z0-9_-]+)/);
                                         const driveId = idMatch ? idMatch[1] : null;
@@ -592,7 +592,7 @@ const MenuScreen = ({
                           </tr>
                         )) : (
                           <tr>
-                            <td colSpan={Object.keys(sparePartsData[0] || {}).length || 1} className="p-10 text-center font-bold text-indigo-400 uppercase tracking-widest text-[10px]">
+                            <td colSpan={Object.keys(sparePartsData[0] || {}).length || 1} className="p-10 text-center font-bold text-indigo-400 uppercase tracking-widest text-xs">
                               Sin resultados
                             </td>
                           </tr>
@@ -606,13 +606,13 @@ const MenuScreen = ({
           }
           return (
             <div className="p-6 bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20">
-               <button onClick={() => setDocumentationSubScreen(null)} className="mb-8 flex items-center gap-2 text-indigo-400 font-black uppercase text-[10px] tracking-widest hover:text-indigo-300"><span className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center">←</span> Volver</button>
-               <div className="grid gap-4">
-                 <button onClick={() => fetchSpareParts('https://docs.google.com/spreadsheets/d/e/2PACX-1vS86FFjvfk8XJXF0bqgcyzAhADOQbtLDFH7JwFcFvqWxJHZugcqxGPky63hB65KJXRfChRXK_kapw3x/pub?gid=1919791847&single=true&output=csv', 'COMPOGUARD')} className="p-8 bg-gray-700 border-2 border-gray-600 rounded-[2rem] font-black text-indigo-300 hover:bg-gray-600 transition-all flex flex-col items-center gap-2 shadow-sm">
-                   <span className="text-3xl">⚖️</span> COMPOGUARD
+               <button onClick={() => setDocumentationSubScreen(null)} className="mb-8 flex items-center gap-3 text-indigo-400 font-black uppercase text-xs tracking-widest hover:text-indigo-300"><span className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-lg">←</span> Volver</button>
+               <div className="grid gap-5">
+                 <button onClick={() => fetchSpareParts('https://docs.google.com/spreadsheets/d/e/2PACX-1vS86FFjvfk8XJXF0bqgcyzAhADOQbtLDFH7JwFcFvqWxJHZugcqxGPky63hB65KJXRfChRXK_kapw3x/pub?gid=1919791847&single=true&output=csv', 'COMPOGUARD')} className="p-8 bg-gray-700 border-2 border-gray-600 rounded-[2rem] font-black text-indigo-300 hover:bg-gray-600 transition-all flex flex-col items-center gap-3 shadow-sm text-lg">
+                   <span className="text-4xl">⚖️</span> COMPOGUARD
                  </button>
-                 <button onClick={() => fetchSpareParts('https://docs.google.com/spreadsheets/d/e/2PACX-1vS86FFjvfk8XJXF0bqgcyzAhADOQbtLDFH7JwFcFvqWxJHZugcqxGPky63hB65KJXRfChRXK_kapw3x/pub?gid=1546674811&single=true&output=csv', 'COMPOMAT G5')} className="p-8 bg-gray-700 border-2 border-gray-600 rounded-[2rem] font-black text-indigo-300 hover:bg-gray-600 transition-all flex flex-col items-center gap-2 shadow-sm">
-                   <span className="text-3xl">🗜️</span> COMPOMAT G5
+                 <button onClick={() => fetchSpareParts('https://docs.google.com/spreadsheets/d/e/2PACX-1vS86FFjvfk8XJXF0bqgcyzAhADOQbtLDFH7JwFcFvqWxJHZugcqxGPky63hB65KJXRfChRXK_kapw3x/pub?gid=1546674811&single=true&output=csv', 'COMPOMAT G5')} className="p-8 bg-gray-700 border-2 border-gray-600 rounded-[2rem] font-black text-indigo-300 hover:bg-gray-600 transition-all flex flex-col items-center gap-3 shadow-sm text-lg">
+                   <span className="text-4xl">🗜️</span> COMPOMAT G5
                  </button>
                </div>
             </div>
@@ -642,13 +642,13 @@ const MenuScreen = ({
         if (documentationSubScreen && docLinks[documentationSubScreen]) {
           return (
             <div className="p-6 bg-gray-800 border border-gray-700 rounded-[2rem] text-left animate-fadeIn shadow-sm pb-20">
-              <button onClick={() => setDocumentationSubScreen(null)} className="mb-8 flex items-center gap-2 text-blue-400 font-black uppercase text-[10px] tracking-widest hover:text-blue-300"><span className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center">←</span> Volver</button>
-              <h3 className="text-2xl font-black mb-6 tracking-tighter uppercase text-white border-b border-gray-700 pb-4">{documentationSubScreen} Docs</h3>
-              <div className="grid gap-3">
+              <button onClick={() => setDocumentationSubScreen(null)} className="mb-8 flex items-center gap-3 text-blue-400 font-black uppercase text-xs tracking-widest hover:text-blue-300"><span className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-lg">←</span> Volver</button>
+              <h3 className="text-3xl font-black mb-8 tracking-tighter uppercase text-white border-b border-gray-700 pb-4">{documentationSubScreen} Docs</h3>
+              <div className="grid gap-4">
                 {docLinks[documentationSubScreen].map(d => (
-                  <button key={d.t} onClick={() => window.open(d.l, '_blank')} className="p-5 bg-gray-700 border-2 border-gray-600 rounded-2xl font-black text-blue-300 text-left hover:bg-gray-600 transition-all flex items-center gap-4">
-                    <span className="text-xl">📄</span>
-                    <span className="text-[11px] uppercase tracking-tighter leading-tight text-gray-200">{d.t}</span>
+                  <button key={d.t} onClick={() => window.open(d.l, '_blank')} className="p-6 bg-gray-700 border-2 border-gray-600 rounded-2xl font-black text-blue-300 text-left hover:bg-gray-600 transition-all flex items-center gap-4">
+                    <span className="text-2xl">📄</span>
+                    <span className="text-xs uppercase tracking-tighter leading-tight text-gray-200">{d.t}</span>
                   </button>
                 ))}
               </div>
@@ -658,18 +658,18 @@ const MenuScreen = ({
 
         return (
           <div className="p-2 flex flex-col animate-fadeIn pb-20">
-            <div className="grid grid-cols-2 gap-3 pb-10">
+            <div className="grid grid-cols-2 gap-4 pb-10">
               {Object.keys(docLinks).map(k => (
-                <button key={k} onClick={() => setDocumentationSubScreen(k)} className="p-6 bg-gray-800 border-2 border-gray-700 rounded-[2rem] text-[10px] font-black uppercase tracking-widest text-gray-200 shadow-sm hover:border-blue-500 transition-all flex flex-col items-center gap-3 active:scale-95">
-                  <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-blue-400">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <button key={k} onClick={() => setDocumentationSubScreen(k)} className="p-6 bg-gray-800 border-2 border-gray-700 rounded-[2rem] text-[11px] font-black uppercase tracking-widest text-gray-200 shadow-sm hover:border-blue-500 transition-all flex flex-col items-center gap-4 active:scale-95">
+                  <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-blue-400">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                   </div>
                   {k}
                 </button>
               ))}
-              <button onClick={() => setDocumentationSubScreen('SPAREPARTS')} className="p-6 bg-indigo-600 border-2 border-indigo-600 rounded-[2rem] text-[10px] font-black uppercase tracking-widest text-white shadow-xl hover:bg-indigo-700 transition-all flex flex-col items-center gap-3 col-span-2 active:scale-95">
-                <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              <button onClick={() => setDocumentationSubScreen('SPAREPARTS')} className="p-6 bg-indigo-600 border-2 border-indigo-600 rounded-[2rem] text-[11px] font-black uppercase tracking-widest text-white shadow-xl hover:bg-indigo-700 transition-all flex flex-col items-center gap-4 col-span-2 active:scale-95">
+                <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center text-white">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                 </div>
                 🛠️ SPARE PARTS HUB
               </button>
@@ -684,91 +684,91 @@ const MenuScreen = ({
           const so = selectedOrderDetails;
           return (
             <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] overflow-hidden animate-fadeIn pb-20 shadow-sm text-left">
-              <div className="p-5 bg-gray-900 border-b border-gray-700 flex items-center">
-                <button onClick={() => setSelectedOrderDetails(null)} className="mr-4 w-8 h-8 flex items-center justify-center bg-gray-700 rounded-lg text-blue-400 hover:bg-gray-600 shadow-sm">←</button>
-                <h3 className="font-black text-blue-300 tracking-tight uppercase text-xs">Detalle de Orden</h3>
+              <div className="p-6 bg-gray-900 border-b border-gray-700 flex items-center">
+                <button onClick={() => setSelectedOrderDetails(null)} className="mr-5 w-10 h-10 flex items-center justify-center bg-gray-700 rounded-lg text-blue-400 hover:bg-gray-600 shadow-sm text-lg">←</button>
+                <h3 className="font-black text-blue-300 tracking-tight uppercase text-sm">Detalle de Orden</h3>
               </div>
               <div className="p-6 space-y-6 overflow-y-auto min-h-[500px]">
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Servicio</p>
-                    <p className="text-xl font-black text-white tracking-tighter">{so.tipoOS}</p>
+                    <p className="text-[11px] font-black text-blue-500 uppercase tracking-widest">Servicio</p>
+                    <p className="text-2xl font-black text-white tracking-tighter mt-1">{so.tipoOS}</p>
                   </div>
-                  <span className={`text-[10px] font-black px-4 py-2 rounded-xl shadow-sm ${(so.status && so.status.toLowerCase().includes('abierto')) ? 'bg-orange-900/50 text-orange-400' : 'bg-green-900/50 text-green-400'}`}>
+                  <span className={`text-[11px] font-black px-4 py-2 rounded-xl shadow-sm ${(so.status && so.status.toLowerCase().includes('abierto')) ? 'bg-orange-900/50 text-orange-400' : 'bg-green-900/50 text-green-400'}`}>
                     {so.status ? (so.status.toLowerCase().includes('abierto') ? 'ABIERTO' : 'CERRADO') : 'ABIERTO'}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 border-t border-gray-700 pt-4">
+                <div className="grid grid-cols-2 gap-4 border-t border-gray-700 pt-5">
                   <div>
-                    <p className="text-[8px] font-black text-gray-500 uppercase">Serie / SN</p>
-                    <p className="text-xs font-black text-gray-200">{so.serie}</p>
+                    <p className="text-[9px] font-black text-gray-500 uppercase">Serie / SN</p>
+                    <p className="text-sm font-black text-gray-200 mt-1">{so.serie}</p>
                   </div>
                   <div>
-                    <p className="text-[8px] font-black text-gray-500 uppercase">Modelo</p>
-                    <p className="text-xs font-black text-gray-200">{so.modelo || 'N/A'}</p>
+                    <p className="text-[9px] font-black text-gray-500 uppercase">Modelo</p>
+                    <p className="text-sm font-black text-gray-200 mt-1">{so.modelo || 'N/A'}</p>
                   </div>
                   <div className="col-span-2">
-                    <p className="text-[8px] font-black text-gray-500 uppercase">Descripción</p>
-                    <p className="text-xs font-black text-gray-200">{so.descripcionEquipo || so.descripcion || 'No especificada'}</p>
+                    <p className="text-[9px] font-black text-gray-500 uppercase">Descripción</p>
+                    <p className="text-sm font-black text-gray-200 mt-1">{so.descripcionEquipo || so.descripcion || 'No especificada'}</p>
                   </div>
                 </div>
 
-                <div className="border-t border-gray-700 pt-4">
-                  <p className="text-[8px] font-black text-gray-500 uppercase">Hospital / Unidad</p>
-                  <p className="text-xs font-black text-white">{so.cliente}</p>
+                <div className="border-t border-gray-700 pt-5">
+                  <p className="text-[9px] font-black text-gray-500 uppercase">Hospital / Unidad</p>
+                  <p className="text-sm font-black text-white mt-1">{so.cliente}</p>
                 </div>
 
-                <div className="bg-gray-700 p-4 rounded-2xl border border-gray-600">
-                  <p className="text-[8px] font-black text-gray-400 uppercase mb-2">Falla Reportada</p>
-                  <p className="text-[11px] font-bold text-gray-200 leading-relaxed italic">"{so.falla}"</p>
+                <div className="bg-gray-700 p-5 rounded-2xl border border-gray-600">
+                  <p className="text-[9px] font-black text-gray-400 uppercase mb-2">Falla Reportada</p>
+                  <p className="text-xs font-bold text-gray-200 leading-relaxed italic">"{so.falla}"</p>
                   {(so.codigoFalla || so.descripcionFalla) && (
-                    <p className="mt-2 text-[10px] font-black text-blue-400">{so.codigoFalla} {so.descripcionFalla}</p>
+                    <p className="mt-3 text-[11px] font-black text-blue-400">{so.codigoFalla} {so.descripcionFalla}</p>
                   )}
                 </div>
 
-                <div className="border-t border-gray-700 pt-4 space-y-3">
-                  <p className="text-[8px] font-black text-gray-500 uppercase">Datos de Contacto</p>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs">👤</span>
-                    <p className="text-[11px] font-bold text-gray-200">{so.reporta || 'No especificado'}</p>
+                <div className="border-t border-gray-700 pt-5 space-y-4">
+                  <p className="text-[9px] font-black text-gray-500 uppercase">Datos de Contacto</p>
+                  <div className="flex items-center gap-4">
+                    <span className="text-base">👤</span>
+                    <p className="text-xs font-bold text-gray-200">{so.reporta || 'No especificado'}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs">📞</span>
-                    <p className="text-[11px] font-bold text-blue-400 font-mono">{so.telefono || 'Sin teléfono'}</p>
+                  <div className="flex items-center gap-4">
+                    <span className="text-base">📞</span>
+                    <p className="text-xs font-bold text-blue-400 font-mono">{so.telefono || 'Sin teléfono'}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs">✉️</span>
-                    <p className="text-[10px] font-bold text-gray-400">{so.email || 'Sin correo'}</p>
+                  <div className="flex items-center gap-4">
+                    <span className="text-base">✉️</span>
+                    <p className="text-[11px] font-bold text-gray-400">{so.email || 'Sin correo'}</p>
                   </div>
                 </div>
 
                 {so.observaciones && (
-                  <div className="border-t border-gray-700 pt-4">
-                    <p className="text-[8px] font-black text-gray-500 uppercase mb-1">Observaciones</p>
-                    <p className="text-[10px] font-bold text-gray-300 leading-tight">{so.observaciones}</p>
+                  <div className="border-t border-gray-700 pt-5">
+                    <p className="text-[9px] font-black text-gray-500 uppercase mb-2">Observaciones</p>
+                    <p className="text-[11px] font-bold text-gray-300 leading-relaxed">{so.observaciones}</p>
                   </div>
                 )}
 
-                <div className="border-t border-gray-700 pt-4 text-center">
-                  <p className="text-[7px] font-black text-gray-500 uppercase tracking-widest">Generado el {so.createdAt ? so.createdAt : 'Desconocido'}</p>
+                <div className="border-t border-gray-700 pt-5 text-center">
+                  <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Generado el {so.createdAt ? so.createdAt : 'Desconocido'}</p>
                 </div>
 
                 {(so.status && so.status.toLowerCase().includes('abierto')) && (
-                  <div className="pt-6">
+                  <div className="pt-8">
                     <button 
                       onClick={() => closeOrder(so)}
                       disabled={closingOrder}
-                      className="w-full bg-red-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-red-700 active:scale-95 transition-all uppercase flex items-center justify-center gap-2"
+                      className="w-full bg-red-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-red-700 active:scale-95 transition-all uppercase flex items-center justify-center gap-3 text-lg"
                     >
                       {closingOrder ? (
                         <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                           PROCESANDO...
                         </>
                       ) : (
                         <>
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                           Cerrar Orden
                         </>
                       )}
@@ -782,27 +782,27 @@ const MenuScreen = ({
 
         return (
           <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] overflow-hidden animate-fadeIn pb-20">
-            <div className="p-5 bg-gray-900 border-b border-gray-700"><h3 className="font-black text-blue-300 tracking-tight uppercase">Historial de Órdenes</h3></div>
+            <div className="p-6 bg-gray-900 border-b border-gray-700"><h3 className="text-lg font-black text-blue-300 tracking-tight uppercase">Historial de Órdenes</h3></div>
             <div className="flex-1 overflow-auto p-5 space-y-4 min-h-[400px]">
               {myOrders.length > 0 ? myOrders.map(so => (
                 <div 
                   key={so.id} 
                   onClick={() => setSelectedOrderDetails(so)}
-                  className="p-5 border-l-[10px] border-l-blue-500 border border-gray-700 rounded-[1.5rem] bg-gray-800 text-left relative shadow-sm active:scale-[0.98] transition-all cursor-pointer hover:bg-gray-700 hover:border-blue-800/50"
+                  className="p-6 border-l-[12px] border-l-blue-500 border border-gray-700 rounded-[1.5rem] bg-gray-800 text-left relative shadow-sm active:scale-[0.98] transition-all cursor-pointer hover:bg-gray-700 hover:border-blue-800/50"
                 >
                   <div className="flex justify-between items-start">
-                    <p className="font-black text-blue-400 text-sm">{so.tipoOS}</p>
-                    <span className={`text-[8px] font-black px-2 py-1 rounded-lg shadow-sm ${(so.status && so.status.toLowerCase().includes('abierto')) ? 'bg-orange-900/50 text-orange-400' : 'bg-green-900/50 text-green-400'}`}>
+                    <p className="font-black text-blue-400 text-base">{so.tipoOS}</p>
+                    <span className={`text-[9px] font-black px-3 py-1.5 rounded-lg shadow-sm ${(so.status && so.status.toLowerCase().includes('abierto')) ? 'bg-orange-900/50 text-orange-400' : 'bg-green-900/50 text-green-400'}`}>
                       {so.status ? (so.status.toLowerCase().includes('abierto') ? 'ABIERTO' : 'CERRADO') : 'ABIERTO'}
                     </span>
                   </div>
-                  <p className="font-black text-white text-[10px] mt-2">{so.serie} - {so.modelo || 'EQUIPO'}</p>
-                  <p className="text-[10px] text-gray-400 uppercase tracking-tight truncate max-w-[200px]">{so.cliente}</p>
-                  <div className="mt-4 flex justify-end">
-                    <span className="text-[9px] font-black text-blue-400 uppercase tracking-tighter">Ver Detalles →</span>
+                  <p className="font-black text-white text-xs mt-3">{so.serie} - {so.modelo || 'EQUIPO'}</p>
+                  <p className="text-[11px] text-gray-400 uppercase tracking-tight truncate max-w-[220px] mt-1">{so.cliente}</p>
+                  <div className="mt-5 flex justify-end">
+                    <span className="text-[10px] font-black text-blue-400 uppercase tracking-tighter">Ver Detalles →</span>
                   </div>
                 </div>
-              )) : <div className="p-10 text-center font-bold text-gray-500 uppercase tracking-widest text-[10px]">Sin órdenes registradas</div>}
+              )) : <div className="p-10 text-center font-bold text-gray-500 uppercase tracking-widest text-[11px]">Sin órdenes registradas</div>}
             </div>
           </div>
         );
@@ -812,28 +812,28 @@ const MenuScreen = ({
 
   return (
     <div className="w-full relative h-full flex flex-col">
-      <div className="flex justify-between items-center mb-6 border-b-2 border-gray-700 pb-5">
+      <div className="flex justify-between items-center mb-8 border-b-2 border-gray-700 pb-5">
         {menuSubScreen === 'dashboard' ? (
-          <div className="flex flex-col text-left"><span className="text-[9px] font-black text-blue-400 uppercase tracking-[0.3em]">Bienvenido</span><h2 className="font-black text-white tracking-tighter uppercase text-xl leading-none">Ing. {loginForm.engineerName.split(' ')[2] || loginForm.engineerName.split(' ')[1]}</h2></div>
+          <div className="flex flex-col text-left"><span className="text-[11px] font-black text-blue-400 uppercase tracking-[0.3em]">Bienvenido</span><h2 className="font-black text-white tracking-tighter uppercase text-3xl leading-none mt-1">Ing. {loginForm.engineerName.split(' ')[2] || loginForm.engineerName.split(' ')[1]}</h2></div>
         ) : (
           <div className="flex items-center gap-4">
             <button 
               onClick={handleSmartBack} 
-              className="w-10 h-10 rounded-xl bg-gray-700 text-blue-400 hover:bg-gray-600 font-black flex items-center justify-center shadow-sm active:scale-90 transition-all"
+              className="w-12 h-12 rounded-xl bg-gray-700 text-blue-400 hover:bg-gray-600 font-black flex items-center justify-center shadow-sm active:scale-90 transition-all text-xl"
             >
               ←
             </button>
-            <h2 className="font-black uppercase text-[10px] tracking-widest text-gray-400">{menuSubScreen}</h2>
+            <h2 className="font-black uppercase text-xs tracking-widest text-gray-400">{menuSubScreen}</h2>
           </div>
         )}
-        {menuSubScreen === 'dashboard' && (<button onClick={() => setScreen('landing')} className="w-10 h-10 flex items-center justify-center bg-gray-700 text-red-400 rounded-xl active:bg-gray-600 hover:bg-gray-600 transition-all"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>)}
+        {menuSubScreen === 'dashboard' && (<button onClick={() => setScreen('landing')} className="w-12 h-12 flex items-center justify-center bg-gray-700 text-red-400 rounded-xl active:bg-gray-600 hover:bg-gray-600 transition-all"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>)}
       </div>
-      <div className="flex-1 overflow-y-auto scroll-smooth pb-10">{menuSubScreen === 'dashboard' ? (<div className="grid gap-5 animate-fadeIn"><MenuButton label="Inventario" subScreenId="equipos" svgIcon={<EquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Reportes" subScreenId="reporteEquipos" svgIcon={<ReporteEquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Material" subScreenId="materialApoyo" svgIcon={<MaterialApoyoSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Agenda" subScreenId="contactos" svgIcon={<ContactosSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /></div>) : renderContent()}</div>
+      <div className="flex-1 overflow-y-auto scroll-smooth pb-10">{menuSubScreen === 'dashboard' ? (<div className="grid gap-6 animate-fadeIn"><MenuButton label="Inventario" subScreenId="equipos" svgIcon={<EquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Reportes" subScreenId="reporteEquipos" svgIcon={<ReporteEquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Material" subScreenId="materialApoyo" svgIcon={<MaterialApoyoSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Agenda" subScreenId="contactos" svgIcon={<ContactosSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /></div>) : renderContent()}</div>
       
-      {showResetOSConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-xs text-center shadow-2xl animate-popIn"><h3 className="font-black text-2xl mb-4 uppercase text-white">Nueva Orden</h3><p className="text-sm text-gray-400 mb-8 font-bold leading-relaxed">¿Deseas vaciar los campos?</p><div className="flex flex-col gap-3"><button onClick={() => { resetOSForm(); setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black">LIMPIAR</button><button onClick={() => { setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-4 bg-gray-700 text-gray-300 rounded-2xl font-black">MANTENER</button></div></div></div>)}
-      {selectedEquipment && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-xs text-center shadow-2xl animate-popIn"><h3 className="font-black text-xl mb-4 uppercase text-white">Reportar Equipo</h3><p className="text-sm text-gray-400 mb-8 font-bold leading-relaxed">¿Reportar serie <span className="text-blue-400 font-black">{selectedEquipment.serie}</span>?</p><div className="flex gap-4"><button onClick={() => setSelectedEquipment(null)} className="flex-1 py-4 bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { setReportForm({ ...reportForm, serie: selectedEquipment.serie, modelo: selectedEquipment.modelo || '', descripcionEquipo: selectedEquipment.descripcion || '', cliente: selectedEquipment.cliente || '' }); setSelectedEquipment(null); setMenuSubScreen('generarOS'); }} className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
-      {showGenerateConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-xs text-center shadow-2xl animate-popIn"><h3 className="font-black text-2xl mb-4 text-green-400 uppercase">Confirmar</h3><p className="text-sm text-gray-400 mb-8 font-bold leading-relaxed">La información se enviará a la nube.</p><div className="flex gap-4"><button onClick={() => setShowGenerateConfirm(false)} className="flex-1 py-4 bg-gray-700 rounded-2xl font-black text-gray-300">CERRAR</button><button onClick={() => { setShowGenerateConfirm(false); submitReport(); }} className="flex-1 py-4 bg-green-600 text-white rounded-2xl font-black">ENVIAR</button></div></div></div>)}
-      {contactToDelete && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-xs text-center shadow-2xl animate-popIn"><h3 className="font-black text-2xl mb-4 text-red-400 uppercase">Eliminar</h3><p className="text-sm text-gray-400 mb-8 font-bold leading-relaxed">¿Eliminar a <span className="text-white">{contactToDelete.name}</span>?</p><div className="flex gap-4"><button onClick={() => setContactToDelete(null)} className="flex-1 py-4 bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { deleteContact(contactToDelete.id); setContactToDelete(null); setMessage("CONTACTO ELIMINADO."); setTimeout(() => setMessage(""), 3000); }} className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
+      {showResetOSConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 uppercase text-white">Nueva Orden</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Deseas vaciar los campos?</p><div className="flex flex-col gap-4"><button onClick={() => { resetOSForm(); setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-blue-600 text-white rounded-2xl font-black">LIMPIAR</button><button onClick={() => { setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-gray-700 text-gray-300 rounded-2xl font-black">MANTENER</button></div></div></div>)}
+      {selectedEquipment && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-2xl mb-5 uppercase text-white">Reportar Equipo</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Reportar serie <br/><span className="text-blue-400 font-black text-xl">{selectedEquipment.serie}</span>?</p><div className="flex gap-4"><button onClick={() => setSelectedEquipment(null)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { setReportForm({ ...reportForm, serie: selectedEquipment.serie, modelo: selectedEquipment.modelo || '', descripcionEquipo: selectedEquipment.descripcion || '', cliente: selectedEquipment.cliente || '' }); setSelectedEquipment(null); setMenuSubScreen('generarOS'); }} className="flex-1 py-5 text-lg bg-blue-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
+      {showGenerateConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-green-400 uppercase">Confirmar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">La información se enviará a la nube.</p><div className="flex gap-4"><button onClick={() => setShowGenerateConfirm(false)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">CERRAR</button><button onClick={() => { setShowGenerateConfirm(false); submitReport(); }} className="flex-1 py-5 text-lg bg-green-600 text-white rounded-2xl font-black">ENVIAR</button></div></div></div>)}
+      {contactToDelete && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-red-400 uppercase">Eliminar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Eliminar a <br/><span className="text-white">{contactToDelete.name}</span>?</p><div className="flex gap-4"><button onClick={() => setContactToDelete(null)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { deleteContact(contactToDelete.id); setContactToDelete(null); setMessage("CONTACTO ELIMINADO."); setTimeout(() => setMessage(""), 3000); }} className="flex-1 py-5 text-lg bg-red-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
     </div>
   );
 };
@@ -1131,11 +1131,11 @@ export default function App() {
   if (loading) return (<div className="h-screen flex flex-col items-center justify-center bg-gray-900 text-blue-400 font-black gap-4"><div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div><div className="animate-pulse tracking-widest text-xs font-black">Fresenius Hub...</div></div>);
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4 font-sans overflow-hidden">
-      <div className="w-full max-w-[420px] bg-gray-800 p-7 rounded-[4rem] shadow-2xl border-8 border-gray-800 relative min-h-[850px] max-h-[95vh] flex flex-col">
+    <div className="min-h-[100dvh] bg-gray-900 md:p-4 flex items-center justify-center font-sans overflow-hidden">
+      <div className="w-full h-[100dvh] md:h-auto md:min-h-[850px] md:max-h-[95vh] max-w-[480px] bg-gray-800 p-6 md:p-8 md:rounded-[3rem] md:border-8 border-gray-700 relative flex flex-col md:shadow-2xl">
         <div className="absolute top-8 left-0 right-0 px-8 z-50 pointer-events-none text-center">
-          {error && <div className="bg-red-500 text-white p-4 text-[10px] rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{error}</div>}
-          {message && screen !== 'menu' && <div className="bg-green-500 text-white p-4 text-[10px] rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{message}</div>}
+          {error && <div className="bg-red-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{error}</div>}
+          {message && screen !== 'menu' && <div className="bg-green-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{message}</div>}
         </div>
         <div className="flex-1 overflow-y-auto scroll-smooth">
           {screen === 'landing' && <LandingScreen setScreen={handleScreenChange} />}
@@ -1152,7 +1152,7 @@ export default function App() {
             />
           )}
         </div>
-        <div className="mt-4 pt-4 border-t border-gray-700 text-center flex justify-center items-center gap-2"><div className="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div><p className="text-[7px] font-black text-gray-500 tracking-[0.4em] uppercase">FRESENIUS KABI • Engineering Hub 2026</p></div>
+        <div className="mt-4 pt-4 border-t border-gray-700 text-center flex justify-center items-center gap-2"><div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div><p className="text-[9px] font-black text-gray-500 tracking-[0.4em] uppercase">FRESENIUS KABI • Engineering Hub</p></div>
       </div>
       <style>{`
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
