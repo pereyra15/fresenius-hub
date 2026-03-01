@@ -722,8 +722,8 @@ const MenuScreen = ({
                 <div className="bg-gray-700 p-4 rounded-2xl border border-gray-600">
                   <p className="text-[8px] font-black text-gray-400 uppercase mb-2">Falla Reportada</p>
                   <p className="text-[11px] font-bold text-gray-200 leading-relaxed italic">"{so.falla}"</p>
-                  {so.descripcionFalla && (
-                    <p className="mt-2 text-[10px] font-black text-blue-400">Cat: {so.codigoFalla} - {so.descripcionFalla}</p>
+                  {(so.codigoFalla || so.descripcionFalla) && (
+                    <p className="mt-2 text-[10px] font-black text-blue-400">{so.codigoFalla} {so.descripcionFalla}</p>
                   )}
                 </div>
 
