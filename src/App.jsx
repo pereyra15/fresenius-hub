@@ -933,15 +933,22 @@ export default function App() {
     }
   }, [error, message]);
 
-  // --- CONTROL DEL BOTÓN ATRÁS ---
+  // --- CONTROL DEL BOTÓN ATRÁS (NIVEL AGRESIVO) ---
   useEffect(() => {
-    window.history.replaceState({ screen: 'landing', menuSub: 'dashboard', docSub: null, spareView: null }, '');
+    const initialState = { screen: 'landing', menuSub: 'dashboard', docSub: null, spareView: null };
+    
+    // Creamos un "colchón" de estados falsos para absorber doble o triple clics hiper-rápidos del celular
+    window.history.replaceState(initialState, '');
+    window.history.pushState(initialState, '');
+    window.history.pushState(initialState, '');
+    window.history.pushState(initialState, '');
 
     const handlePopState = (event) => {
       const current = stateRef.current;
 
-      // Bloquear retroceso en Pantalla Inicial (landing) y Menú Principal (dashboard)
+      // Bloquear retroceso agresivamente en Pantalla Inicial y Menú Principal
       if (current.screen === 'landing' || (current.screen === 'menu' && current.menuSubScreen === 'dashboard')) {
+        // Devolvemos el estado inmediatamente para rearmar la trampa
         window.history.pushState({ 
           screen: current.screen, 
           menuSub: current.menuSubScreen, 
@@ -951,6 +958,7 @@ export default function App() {
         return;
       }
 
+      // Navegación normal para el resto de pantallas
       if (event.state) {
         const { screen, menuSub, docSub, spareView } = event.state;
         setScreen(screen);
