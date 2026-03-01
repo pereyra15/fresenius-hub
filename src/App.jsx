@@ -41,7 +41,8 @@ const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby-qGJlQG_vxJ
 
 const mockEngineers = [
   'WS06 JORGE VELAZQUEZ', 'WS07 EDGAR NUÑO', 'WS09 ZAHIRA ISLAS',
-  'WS10 JUAN CARLOS SAAVEDRA', 'WS11 JORGE DIAZ', 'WS12 HIRAM ALVAREZ', 'WS15 VICTOR ENRIQUEZ'
+  'WS10 JUAN CARLOS SAAVEDRA', 'WS11 JORGE DIAZ', 'WS12 HIRAM ALVAREZ', 'WS15 VICTOR ENRIQUEZ',
+  'WSMG DELFINO MUÑOZ', 'WSPL CARLOS LUIS'
 ];
 
 const fallaMapping = [
@@ -186,6 +187,9 @@ const MenuScreen = ({
   contacts, addContact, deleteContact, serviceOrders, sheetOrders, setSheetOrders, equipment,
   documentationSubScreen, setDocumentationSubScreen, currentSparePartView, setCurrentSparePartView
 }) => {
+  // Identificar si el usuario actual tiene permisos para asignar a otros
+  const isSupervisor = ['WSMG DELFINO MUÑOZ', 'WSPL CARLOS LUIS'].includes(loginForm.engineerName);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [contactSearch, setContactSearch] = useState('');
   const [sparePartsSearch, setSparePartsSearch] = useState('');
@@ -272,7 +276,7 @@ const MenuScreen = ({
         status: 'Abierto', 
         createdAt: new Date().toISOString(), 
         createdBy: userId, 
-        engineerName: loginForm.engineerName
+        engineerName: reportForm.ingeniero // Usar el ingeniero del formulario, no el que inició sesión
       });
 
       if (GOOGLE_SHEETS_URL) {
@@ -296,7 +300,7 @@ const MenuScreen = ({
         ...reportForm,
         status: 'Abierto',
         createdAt: new Date().toISOString(),
-        engineerName: loginForm.engineerName
+        engineerName: reportForm.ingeniero // Reflejar en la vista local correctamente
       };
       setSheetOrders(prev => [novaMendo, ...prev]);
 
@@ -436,6 +440,13 @@ const MenuScreen = ({
           <div className="p-6 bg-gray-800 border border-gray-700 rounded-[2rem] overflow-y-auto animate-fadeIn text-left shadow-sm pb-20">
             <h3 className="text-3xl font-black mb-8 text-white tracking-tighter border-b border-gray-700 pb-4 uppercase">Nueva Orden</h3>
             <datalist id="contactos-agenda">{contacts.map(c => <option key={c.id} value={c.name}>{c.client}</option>)}</datalist>
+            
+            {isSupervisor ? (
+              <Select label="Ingeniero Asignado *" name="ingeniero" value={reportForm.ingeniero} onChange={handleReportChange} options={mockEngineers} />
+            ) : (
+              <Input label="Ingeniero Asignado" name="ingeniero" value={reportForm.ingeniero} readOnly />
+            )}
+
             <Select label="Tipo de Servicio" name="tipoOS" value={reportForm.tipoOS} onChange={handleReportChange} options={['ZMXC (MTTO CORRECTIVO)', 'ZMXP (MTTO PREVENTIVO)', 'ZMXI (INSTALACIÓN)', 'ZMXA (ASESORÍA)']} />
             <Input label="Serie / SN" name="serie" value={reportForm.serie} onChange={handleReportChange} />
             <Input label="Modelo" name="modelo" value={reportForm.modelo} onChange={handleReportChange} readOnly />
