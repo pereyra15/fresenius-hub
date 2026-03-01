@@ -396,7 +396,8 @@ const MenuScreen = ({
         const filtered = equipment.filter(item => {
           const eng = (loginForm.engineerName || '').toLowerCase();
           const resp = (item.responsable || '').toLowerCase();
-          const matchEng = eng.includes(resp) || resp.includes(eng);
+          // Si es supervisor, ve todo. Si no, solo los equipos que coincidan con su nombre.
+          const matchEng = isSupervisor ? true : (eng.includes(resp) || resp.includes(eng));
           const matchTerm = (item.serie + (item.modelo || '') + (item.cliente || '')).toLowerCase().includes(searchTerm.toLowerCase());
           return matchEng && matchTerm;
         });
