@@ -1033,10 +1033,17 @@ export default function App() {
             else if(h.includes('modelo')) obj.modelo = v; 
             else if(h.includes('cliente') || h.includes('hospital')) obj.cliente = v; 
             else if(h.includes('ingeniero')) obj.engineerName = v; 
-            else if(h.includes('falla') && !h.includes('codigo') && !h.includes('descripc') && !h.includes('catalogo')) obj.falla = v; 
+            
+            // --- CORRECCIÓN EN LA COLUMNA FALLA ---
+            else if(h === 'falla') obj.falla = v; // La columna "falla" exacta jamás será sobreescrita
             else if(h.includes('codigo') && h.includes('falla')) obj.codigoFalla = v;
             else if(h.includes('descripc') && h.includes('falla')) obj.descripcionFalla = v;
             else if(h.includes('descripc') && !h.includes('falla')) obj.descripcionEquipo = v;
+            else if(h.includes('falla') && !h.includes('codigo') && !h.includes('descripc') && !h.includes('catalogo')) {
+              // Si encuentra algo como "Tipo de falla" (vacío), SOLO lo escribe si obj.falla no se ha llenado antes.
+              if (!obj.falla) obj.falla = v; 
+            }
+            
             else if(h.includes('tipo')) obj.tipoOS = v; 
             else if(h.includes('fecha')) obj.createdAt = v; 
             else if(h.includes('reporta') || h.includes('contacto')) obj.reporta = v; 
