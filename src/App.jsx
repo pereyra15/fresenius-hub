@@ -1033,7 +1033,10 @@ export default function App() {
             else if(h.includes('modelo')) obj.modelo = v; 
             else if(h.includes('cliente') || h.includes('hospital')) obj.cliente = v; 
             else if(h.includes('ingeniero')) obj.engineerName = v; 
-            else if(h.includes('falla')) obj.falla = v; 
+            else if(h.includes('falla') && !h.includes('codigo') && !h.includes('descripc') && !h.includes('catalogo')) obj.falla = v; 
+            else if(h.includes('codigo') && h.includes('falla')) obj.codigoFalla = v;
+            else if(h.includes('descripc') && h.includes('falla')) obj.descripcionFalla = v;
+            else if(h.includes('descripc') && !h.includes('falla')) obj.descripcionEquipo = v;
             else if(h.includes('tipo')) obj.tipoOS = v; 
             else if(h.includes('fecha')) obj.createdAt = v; 
             else if(h.includes('reporta') || h.includes('contacto')) obj.reporta = v; 
