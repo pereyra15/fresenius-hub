@@ -1085,6 +1085,7 @@ export default function App() {
 
   const loginEngineer = async () => {
     if (!loginForm.engineerName || !loginForm.password) { setError("INGRESE PIN."); return; }
+    if (!user) { setError("ERROR: Firebase Auth bloqueado. Revisa tu consola de Firebase."); return; }
     setLoading(true);
     try {
       const q = collection(db, 'artifacts', appId, 'public', 'data', 'engineers');
@@ -1097,7 +1098,7 @@ export default function App() {
       }
       setError(''); 
       navigate('menu');
-    } catch (e) { setError("Error."); } finally { setLoading(false); }
+    } catch (e) { setError("ERROR FIREBASE: " + e.message); } finally { setLoading(false); }
   };
 
   const registerEngineer = async () => {
@@ -1123,6 +1124,8 @@ export default function App() {
       return;
     }
 
+    if (!user) { setError("ERROR: Firebase Auth bloqueado. Revisa tu consola de Firebase."); return; }
+
     setLoading(true);
     try {
       const q = collection(db, 'artifacts', appId, 'public', 'data', 'engineers');
@@ -1137,7 +1140,7 @@ export default function App() {
 
       await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'engineers'), { ...registerForm, createdAt: new Date().toISOString() });
       handleScreenChange('login');
-    } catch (e) { setError("Error."); } finally { setLoading(false); }
+    } catch (e) { setError("ERROR FIREBASE: " + e.message); } finally { setLoading(false); }
   };
 
   if (loading) return (<div className="h-screen flex flex-col items-center justify-center bg-gray-900 text-blue-400 font-black gap-4"><div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div><div className="animate-pulse tracking-widest text-xs font-black">Fresenius Hub...</div></div>);
