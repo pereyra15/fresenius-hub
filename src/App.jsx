@@ -187,6 +187,15 @@ const MenuScreen = ({
   contacts, addContact, deleteContact, serviceOrders, sheetOrders, setSheetOrders, equipment,
   documentationSubScreen, setDocumentationSubScreen, currentSparePartView, setCurrentSparePartView
 }) => {
+  const contentScrollRef = useRef(null);
+
+  // Obliga a que la pantalla suba hasta arriba al cambiar de vista
+  useEffect(() => {
+    if (contentScrollRef.current) {
+      contentScrollRef.current.scrollTop = 0;
+    }
+  }, [menuSubScreen, selectedOrderDetails, documentationSubScreen, currentSparePartView]);
+
   // Identificar si el usuario actual tiene permisos para asignar a otros
   const isSupervisor = ['WSMG DELFINO MUÑOZ', 'WSPL CARLOS LUIS'].includes(loginForm.engineerName);
 
@@ -443,7 +452,7 @@ const MenuScreen = ({
 
       case 'generarOS':
         return (
-          <div className="p-6 bg-gray-800 border border-gray-700 rounded-[2rem] overflow-y-auto animate-fadeIn text-left shadow-sm pb-20">
+          <div className="p-6 bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn text-left shadow-sm pb-20">
             <h3 className="text-3xl font-black mb-8 text-white tracking-tighter border-b border-gray-700 pb-4 uppercase">Nueva Orden</h3>
             <datalist id="contactos-agenda">{contacts.map(c => <option key={c.id} value={c.name}>{c.client}</option>)}</datalist>
             
@@ -845,7 +854,7 @@ const MenuScreen = ({
         )}
         {menuSubScreen === 'dashboard' && (<button onClick={() => setScreen('landing')} className="w-12 h-12 flex items-center justify-center bg-gray-700 text-red-400 rounded-xl active:bg-gray-600 hover:bg-gray-600 transition-all"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>)}
       </div>
-      <div className="flex-1 overflow-y-auto scroll-smooth pb-10">{menuSubScreen === 'dashboard' ? (<div className="grid gap-6 animate-fadeIn"><MenuButton label="Inventario" subScreenId="equipos" svgIcon={<EquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Reportes" subScreenId="reporteEquipos" svgIcon={<ReporteEquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Material" subScreenId="materialApoyo" svgIcon={<MaterialApoyoSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Agenda" subScreenId="contactos" svgIcon={<ContactosSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /></div>) : renderContent()}</div>
+      <div ref={contentScrollRef} className="flex-1 overflow-y-auto scroll-smooth pb-10">{menuSubScreen === 'dashboard' ? (<div className="grid gap-6 animate-fadeIn"><MenuButton label="Inventario" subScreenId="equipos" svgIcon={<EquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Reportes" subScreenId="reporteEquipos" svgIcon={<ReporteEquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Material" subScreenId="materialApoyo" svgIcon={<MaterialApoyoSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Agenda" subScreenId="contactos" svgIcon={<ContactosSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /></div>) : renderContent()}</div>
       
       {showResetOSConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 uppercase text-white">Nueva Orden</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Deseas vaciar los campos?</p><div className="flex flex-col gap-4"><button onClick={() => { resetOSForm(); setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-blue-600 text-white rounded-2xl font-black">LIMPIAR</button><button onClick={() => { setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-gray-700 text-gray-300 rounded-2xl font-black">MANTENER</button></div></div></div>)}
       
@@ -920,12 +929,21 @@ export default function App() {
   const [registerForm, setRegisterForm] = useState({ engineerName: '', phone: '', email: '', password: '' });
   const [loginForm, setLoginForm] = useState({ engineerName: '', password: '' });
 
+  const appScrollRef = useRef(null);
+
   // Referencia para saber siempre en qué pantalla estamos actualmente
   const stateRef = useRef({ screen, menuSubScreen, documentationSubScreen, currentSparePartView });
 
   useEffect(() => {
     stateRef.current = { screen, menuSubScreen, documentationSubScreen, currentSparePartView };
   }, [screen, menuSubScreen, documentationSubScreen, currentSparePartView]);
+
+  // Obliga a subir hasta arriba en las pantallas principales de Landing, Login y Register
+  useEffect(() => {
+    if (appScrollRef.current) {
+      appScrollRef.current.scrollTop = 0;
+    }
+  }, [screen]);
 
   // --- CONFIGURACIÓN DE ICONO Y PWA PARA EL CELULAR ---
   useEffect(() => {
@@ -1206,7 +1224,7 @@ export default function App() {
           {error && <div className="bg-red-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{error}</div>}
           {message && screen !== 'menu' && <div className="bg-green-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{message}</div>}
         </div>
-        <div className="flex-1 overflow-y-auto scroll-smooth">
+        <div ref={appScrollRef} className="flex-1 overflow-y-auto scroll-smooth">
           {screen === 'landing' && <LandingScreen setScreen={handleScreenChange} />}
           {screen === 'register' && <RegisterScreen form={registerForm} onChange={e => setRegisterForm({...registerForm, [e.target.name]: e.target.value})} onSubmit={registerEngineer} loading={loading} setScreen={handleScreenChange} />}
           {screen === 'login' && <LoginScreen form={loginForm} onChange={e => setLoginForm({...loginForm, [e.target.name]: e.target.value})} onSubmit={loginEngineer} loading={loading} setScreen={handleScreenChange} />}
