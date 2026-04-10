@@ -187,17 +187,11 @@ const MenuScreen = ({
   contacts, addContact, deleteContact, serviceOrders, sheetOrders, setSheetOrders, equipment,
   documentationSubScreen, setDocumentationSubScreen, currentSparePartView, setCurrentSparePartView
 }) => {
-  const contentScrollRef = useRef(null);
-
-  // Obliga a que la pantalla suba hasta arriba al cambiar de vista
-  useEffect(() => {
-    if (contentScrollRef.current) {
-      contentScrollRef.current.scrollTop = 0;
-    }
-  }, [menuSubScreen, selectedOrderDetails, documentationSubScreen, currentSparePartView]);
-
   // Identificar si el usuario actual tiene permisos para asignar a otros
   const isSupervisor = ['WSMG DELFINO MUÑOZ', 'WSPL CARLOS LUIS'].includes(loginForm.engineerName);
+
+  // Referencia al contenedor de scroll principal para resetear posición en cambios de vista
+  const contentScrollRef = useRef(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [contactSearch, setContactSearch] = useState('');
@@ -222,6 +216,13 @@ const MenuScreen = ({
     falla: '', area: '', reporta: '', contacto: '', telefono: '', email: '', observaciones: '',
     catalogoFalla: 'FKMX-CS', codigoFalla: '', descripcionFalla: ''
   });
+
+  // Efecto para resetear el scroll al inicio cada vez que cambia la sección o se selecciona algo
+  useEffect(() => {
+    if (contentScrollRef.current) {
+      contentScrollRef.current.scrollTop = 0;
+    }
+  }, [menuSubScreen, documentationSubScreen, selectedOrderDetails, currentSparePartView]);
 
   const resetOSForm = () => {
     setReportForm({
@@ -285,7 +286,7 @@ const MenuScreen = ({
         status: 'Abierto', 
         createdAt: new Date().toISOString(), 
         createdBy: userId, 
-        engineerName: reportForm.ingeniero // Usar el ingeniero del formulario, no el que inició sesión
+        engineerName: reportForm.ingeniero 
       });
 
       if (GOOGLE_SHEETS_URL) {
@@ -309,7 +310,7 @@ const MenuScreen = ({
         ...reportForm,
         status: 'Abierto',
         createdAt: new Date().toISOString(),
-        engineerName: reportForm.ingeniero // Reflejar en la vista local correctamente
+        engineerName: reportForm.ingeniero 
       };
       setSheetOrders(prev => [novaMendo, ...prev]);
 
@@ -405,9 +406,7 @@ const MenuScreen = ({
         const filtered = equipment.filter(item => {
           const eng = (loginForm.engineerName || '').toLowerCase();
           const resp = (item.responsable || '').toLowerCase();
-          // Si es supervisor, ve todo. Si no, solo los equipos que coincidan con su nombre.
           const matchEng = isSupervisor ? true : (eng.includes(resp) || resp.includes(eng));
-          // Añadimos item.descripcion al buscador para que también se pueda buscar por descripción
           const matchTerm = (item.serie + (item.modelo || '') + (item.descripcion || '') + (item.cliente || '')).toLowerCase().includes(searchTerm.toLowerCase());
           return matchEng && matchTerm;
         });
@@ -422,7 +421,6 @@ const MenuScreen = ({
                     <tr key={item.id} onClick={() => setSelectedEquipment(item)} className="hover:bg-gray-700 cursor-pointer transition-colors active:bg-gray-600">
                       <td className="p-4 font-mono font-black text-blue-400 text-sm">{item.serie}</td>
                       <td className="p-4">
-                        {/* Se cambia item.modelo por item.descripcion */}
                         <div className="font-black text-white uppercase text-[11px]">{item.descripcion || 'SIN DESCRIPCIÓN'}</div>
                         <div className="text-[10px] text-gray-400 uppercase tracking-tighter truncate max-w-[140px]">{item.cliente}</div>
                       </td>
@@ -452,7 +450,7 @@ const MenuScreen = ({
 
       case 'generarOS':
         return (
-          <div className="p-6 bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn text-left shadow-sm pb-20">
+          <div className="p-6 bg-gray-800 border border-gray-700 rounded-[2rem] overflow-y-auto animate-fadeIn text-left shadow-sm pb-20">
             <h3 className="text-3xl font-black mb-8 text-white tracking-tighter border-b border-gray-700 pb-4 uppercase">Nueva Orden</h3>
             <datalist id="contactos-agenda">{contacts.map(c => <option key={c.id} value={c.name}>{c.client}</option>)}</datalist>
             
@@ -852,9 +850,20 @@ const MenuScreen = ({
             <h2 className="font-black uppercase text-xs tracking-widest text-gray-400">{menuSubScreen}</h2>
           </div>
         )}
-        {menuSubScreen === 'dashboard' && (<button onClick={() => setScreen('landing')} className="w-12 h-12 flex items-center justify-center bg-gray-700 text-red-400 rounded-xl active:bg-gray-600 hover:bg-gray-600 transition-all"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>)}
+        {menuSubScreen === 'dashboard' && (<button onClick={() => setScreen('landing')} className="w-12 h-12 flex items-center justify-center bg-gray-700 text-red-400 rounded-xl active:bg-gray-600 hover:bg-gray-600 transition-all"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg></button>)}
       </div>
-      <div ref={contentScrollRef} className="flex-1 overflow-y-auto scroll-smooth pb-10">{menuSubScreen === 'dashboard' ? (<div className="grid gap-6 animate-fadeIn"><MenuButton label="Inventario" subScreenId="equipos" svgIcon={<EquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Reportes" subScreenId="reporteEquipos" svgIcon={<ReporteEquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Material" subScreenId="materialApoyo" svgIcon={<MaterialApoyoSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Agenda" subScreenId="contactos" svgIcon={<ContactosSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /></div>) : renderContent()}</div>
+      
+      {/* Añadida la referencia contentScrollRef aquí para manejar el reset del scroll */}
+      <div ref={contentScrollRef} className="flex-1 overflow-y-auto scroll-smooth pb-10">
+        {menuSubScreen === 'dashboard' ? (
+          <div className="grid gap-6 animate-fadeIn">
+            <MenuButton label="Inventario" subScreenId="equipos" svgIcon={<EquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} />
+            <MenuButton label="Reportes" subScreenId="reporteEquipos" svgIcon={<ReporteEquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} />
+            <MenuButton label="Material" subScreenId="materialApoyo" svgIcon={<MaterialApoyoSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} />
+            <MenuButton label="Agenda" subScreenId="contactos" svgIcon={<ContactosSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} />
+          </div>
+        ) : renderContent()}
+      </div>
       
       {showResetOSConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 uppercase text-white">Nueva Orden</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Deseas vaciar los campos?</p><div className="flex flex-col gap-4"><button onClick={() => { resetOSForm(); setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-blue-600 text-white rounded-2xl font-black">LIMPIAR</button><button onClick={() => { setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-gray-700 text-gray-300 rounded-2xl font-black">MANTENER</button></div></div></div>)}
       
@@ -929,44 +938,30 @@ export default function App() {
   const [registerForm, setRegisterForm] = useState({ engineerName: '', phone: '', email: '', password: '' });
   const [loginForm, setLoginForm] = useState({ engineerName: '', password: '' });
 
-  const appScrollRef = useRef(null);
-
-  // Referencia para saber siempre en qué pantalla estamos actualmente
   const stateRef = useRef({ screen, menuSubScreen, documentationSubScreen, currentSparePartView });
 
   useEffect(() => {
     stateRef.current = { screen, menuSubScreen, documentationSubScreen, currentSparePartView };
   }, [screen, menuSubScreen, documentationSubScreen, currentSparePartView]);
 
-  // Obliga a subir hasta arriba en las pantallas principales de Landing, Login y Register
-  useEffect(() => {
-    if (appScrollRef.current) {
-      appScrollRef.current.scrollTop = 0;
-    }
-  }, [screen]);
-
-  // --- CONFIGURACIÓN DE ICONO Y PWA PARA EL CELULAR ---
   useEffect(() => {
     document.title = "Fresenius Hub";
     const iconUrl = "https://lh3.googleusercontent.com/d/1xl3VUyb0n-2wDlaBO06KRamI13PuWX8z";
 
-    // Cambiar Favicon estándar
     let link = document.querySelector("link[rel~='icon']");
     if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
     link.href = iconUrl;
 
-    // Cambiar icono para dispositivos Apple/iOS
     let appleLink = document.querySelector("link[rel='apple-touch-icon']");
     if (!appleLink) { appleLink = document.createElement('link'); appleLink.rel = 'apple-touch-icon'; document.head.appendChild(appleLink); }
     appleLink.href = iconUrl;
 
-    // Forzar Manifest para que Android lo detecte al añadir a la pantalla de inicio
     const manifest = {
       name: "Fresenius Engineering Hub",
       short_name: "Fresenius",
       start_url: "/",
       display: "standalone",
-      background_color: "#111827", // Modificado al tono oscuro de Tailwind (gray-900)
+      background_color: "#111827", 
       theme_color: "#2563eb",
       icons: [{ src: iconUrl, sizes: "192x192 512x512", type: "image/png", purpose: "any maskable" }]
     };
@@ -976,7 +971,6 @@ export default function App() {
     manifestLink.href = URL.createObjectURL(manifestBlob);
   }, []);
 
-  // --- FUNCIÓN DE NAVEGACIÓN GLOBAL ---
   const navigate = (s, ms = 'dashboard', ds = null, csv = null) => {
     setScreen(s);
     setMenuSubScreen(ms);
@@ -1013,11 +1007,8 @@ export default function App() {
     }
   }, [error, message]);
 
-  // --- CONTROL DEL BOTÓN ATRÁS (NIVEL AGRESIVO) ---
   useEffect(() => {
     const initialState = { screen: 'landing', menuSub: 'dashboard', docSub: null, spareView: null };
-    
-    // Creamos un "colchón" de estados falsos para absorber doble o triple clics hiper-rápidos del celular
     window.history.replaceState(initialState, '');
     window.history.pushState(initialState, '');
     window.history.pushState(initialState, '');
@@ -1025,10 +1016,7 @@ export default function App() {
 
     const handlePopState = (event) => {
       const current = stateRef.current;
-
-      // Bloquear retroceso agresivamente en Pantalla Inicial y Menú Principal
       if (current.screen === 'landing' || (current.screen === 'menu' && current.menuSubScreen === 'dashboard')) {
-        // Devolvemos el estado inmediatamente para rearmar la trampa
         window.history.pushState({ 
           screen: current.screen, 
           menuSub: current.menuSubScreen, 
@@ -1037,8 +1025,6 @@ export default function App() {
         }, '');
         return;
       }
-
-      // Navegación normal para el resto de pantallas
       if (event.state) {
         const { screen, menuSub, docSub, spareView } = event.state;
         setScreen(screen);
@@ -1117,17 +1103,13 @@ export default function App() {
             else if(h.includes('modelo')) obj.modelo = v; 
             else if(h.includes('cliente') || h.includes('hospital')) obj.cliente = v; 
             else if(h.includes('ingeniero')) obj.engineerName = v; 
-            
-            // --- CORRECCIÓN EN LA COLUMNA FALLA ---
-            else if(h === 'falla') obj.falla = v; // La columna "falla" exacta jamás será sobreescrita
+            else if(h === 'falla') obj.falla = v; 
             else if(h.includes('codigo') && h.includes('falla')) obj.codigoFalla = v;
             else if(h.includes('descripc') && h.includes('falla')) obj.descripcionFalla = v;
             else if(h.includes('descripc') && !h.includes('falla')) obj.descripcionEquipo = v;
             else if(h.includes('falla') && !h.includes('codigo') && !h.includes('descripc') && !h.includes('catalogo')) {
-              // Si encuentra algo como "Tipo de falla" (vacío), SOLO lo escribe si obj.falla no se ha llenado antes.
               if (!obj.falla) obj.falla = v; 
             }
-            
             else if(h.includes('tipo')) obj.tipoOS = v; 
             else if(h.includes('fecha')) obj.createdAt = v; 
             else if(h.includes('reporta') || h.includes('contacto')) obj.reporta = v; 
@@ -1143,9 +1125,7 @@ export default function App() {
         setSheetOrders(data);
       } catch (e) { console.error("Error al obtener órdenes de Sheets", e); }
     };
-    if (user) {
-        fetchSheetOrders();
-    }
+    if (user) { fetchSheetOrders(); }
   }, [user]);
 
   useEffect(() => {
@@ -1157,59 +1137,31 @@ export default function App() {
 
   const loginEngineer = async () => {
     if (!loginForm.engineerName || !loginForm.password) { setError("INGRESE PIN."); return; }
-    if (!user) { setError("ERROR: Firebase Auth bloqueado. Revisa tu consola de Firebase."); return; }
+    if (!user) { setError("ERROR: Firebase Auth bloqueado."); return; }
     setLoading(true);
     try {
       const q = collection(db, 'artifacts', appId, 'public', 'data', 'engineers');
       const s = await getDocs(q);
       const found = s.docs.find(d => d.data().engineerName === loginForm.engineerName && d.data().password === loginForm.password);
-      if (!found) { 
-        setError("PIN INCORRECTO."); 
-        setLoading(false); 
-        return; 
-      }
-      setError(''); 
-      navigate('menu');
+      if (!found) { setError("PIN INCORRECTO."); setLoading(false); return; }
+      setError(''); navigate('menu');
     } catch (e) { setError("ERROR FIREBASE: " + e.message); } finally { setLoading(false); }
   };
 
   const registerEngineer = async () => {
-    if (!registerForm.engineerName || !registerForm.phone || !registerForm.email || !registerForm.password) { 
-      setError("TODOS LOS CAMPOS SON OBLIGATORIOS."); 
-      return; 
-    }
-
+    if (!registerForm.engineerName || !registerForm.phone || !registerForm.email || !registerForm.password) { setError("TODOS LOS CAMPOS SON OBLIGATORIOS."); return; }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(registerForm.email)) {
-      setError("CORREO ELECTRÓNICO INVÁLIDO.");
-      return;
-    }
-
+    if (!emailRegex.test(registerForm.email)) { setError("CORREO ELECTRÓNICO INVÁLIDO."); return; }
     const phoneRegex = /^\d{10}$/;
-    if (!phoneRegex.test(registerForm.phone)) {
-      setError("EL TELÉFONO DEBE TENER EXACTAMENTE 10 DÍGITOS.");
-      return;
-    }
-
-    if (registerForm.password.length < 4) {
-      setError("EL PIN DEBE TENER AL MENOS 4 CARACTERES.");
-      return;
-    }
-
-    if (!user) { setError("ERROR: Firebase Auth bloqueado. Revisa tu consola de Firebase."); return; }
-
+    if (!phoneRegex.test(registerForm.phone)) { setError("EL TELÉFONO DEBE TENER 10 DÍGITOS."); return; }
+    if (registerForm.password.length < 4) { setError("EL PIN DEBE TENER AL MENOS 4 CARACTERES."); return; }
+    if (!user) { setError("ERROR: Firebase Auth bloqueado."); return; }
     setLoading(true);
     try {
       const q = collection(db, 'artifacts', appId, 'public', 'data', 'engineers');
       const s = await getDocs(q);
       const found = s.docs.find(d => d.data().engineerName === registerForm.engineerName);
-      
-      if (found) {
-        setError("EL INGENIERO YA ESTÁ REGISTRADO.");
-        setLoading(false);
-        return;
-      }
-
+      if (found) { setError("EL INGENIERO YA ESTÁ REGISTRADO."); setLoading(false); return; }
       await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'engineers'), { ...registerForm, createdAt: new Date().toISOString() });
       handleScreenChange('login');
     } catch (e) { setError("ERROR FIREBASE: " + e.message); } finally { setLoading(false); }
@@ -1224,7 +1176,7 @@ export default function App() {
           {error && <div className="bg-red-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{error}</div>}
           {message && screen !== 'menu' && <div className="bg-green-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{message}</div>}
         </div>
-        <div ref={appScrollRef} className="flex-1 overflow-y-auto scroll-smooth">
+        <div className="flex-1 overflow-y-auto scroll-smooth">
           {screen === 'landing' && <LandingScreen setScreen={handleScreenChange} />}
           {screen === 'register' && <RegisterScreen form={registerForm} onChange={e => setRegisterForm({...registerForm, [e.target.name]: e.target.value})} onSubmit={registerEngineer} loading={loading} setScreen={handleScreenChange} />}
           {screen === 'login' && <LoginScreen form={loginForm} onChange={e => setLoginForm({...loginForm, [e.target.name]: e.target.value})} onSubmit={loginEngineer} loading={loading} setScreen={handleScreenChange} />}
@@ -1251,8 +1203,6 @@ export default function App() {
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
         input:focus, textarea:focus { scroll-margin-bottom: 20px; }
-        
-        /* Asegurar que las barras de desplazamiento sigan el tema oscuro */
         * { scrollbar-color: #4b5563 transparent; }
       `}</style>
     </div>
