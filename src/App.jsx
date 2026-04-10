@@ -848,7 +848,56 @@ const MenuScreen = ({
       <div className="flex-1 overflow-y-auto scroll-smooth pb-10">{menuSubScreen === 'dashboard' ? (<div className="grid gap-6 animate-fadeIn"><MenuButton label="Inventario" subScreenId="equipos" svgIcon={<EquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Reportes" subScreenId="reporteEquipos" svgIcon={<ReporteEquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Material" subScreenId="materialApoyo" svgIcon={<MaterialApoyoSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /><MenuButton label="Agenda" subScreenId="contactos" svgIcon={<ContactosSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} /></div>) : renderContent()}</div>
       
       {showResetOSConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 uppercase text-white">Nueva Orden</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Deseas vaciar los campos?</p><div className="flex flex-col gap-4"><button onClick={() => { resetOSForm(); setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-blue-600 text-white rounded-2xl font-black">LIMPIAR</button><button onClick={() => { setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-gray-700 text-gray-300 rounded-2xl font-black">MANTENER</button></div></div></div>)}
-      {selectedEquipment && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-2xl mb-5 uppercase text-white">Reportar Equipo</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Reportar serie <br/><span className="text-blue-400 font-black text-xl">{selectedEquipment.serie}</span>?</p><div className="flex gap-4"><button onClick={() => setSelectedEquipment(null)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { setReportForm({ ...reportForm, serie: selectedEquipment.serie, modelo: selectedEquipment.modelo || '', descripcionEquipo: selectedEquipment.descripcion || '', cliente: selectedEquipment.cliente || '' }); setSelectedEquipment(null); setMenuSubScreen('generarOS'); }} className="flex-1 py-5 text-lg bg-blue-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
+      
+      {selectedEquipment && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm">
+          <div className="bg-gray-800 p-8 rounded-[2.5rem] w-full max-w-sm text-left shadow-2xl animate-popIn border border-gray-700">
+            <div className="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
+              <h3 className="font-black text-xl uppercase text-white tracking-tight">Detalles del Equipo</h3>
+              <button onClick={() => setSelectedEquipment(null)} className="text-gray-400 hover:text-white text-2xl active:scale-90 transition-transform">✕</button>
+            </div>
+            
+            <div className="space-y-5 mb-8">
+              <div>
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Serie / SN</p>
+                <p className="text-2xl font-black text-blue-400 tracking-tighter">{selectedEquipment.serie}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Descripción</p>
+                  <p className="text-sm font-black text-gray-200">{selectedEquipment.descripcion || 'Sin descripción'}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Modelo</p>
+                  <p className="text-sm font-black text-gray-200">{selectedEquipment.modelo || 'N/A'}</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Hospital / Unidad</p>
+                <p className="text-sm font-black text-white">{selectedEquipment.cliente || 'No especificado'}</p>
+              </div>
+              <div className="pt-2">
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Estatus Actual</p>
+                {sheetOrders.some(so => so.serie === selectedEquipment.serie && so.status && so.status.toLowerCase().includes('abierto')) ? (
+                  <span className="bg-orange-900/50 text-orange-400 px-4 py-2 rounded-xl text-[10px] font-black tracking-widest shadow-sm">🔴 CON REPORTE ABIERTO</span>
+                ) : (
+                  <span className="bg-green-900/50 text-green-400 px-4 py-2 rounded-xl text-[10px] font-black tracking-widest shadow-sm">🟢 SIN REPORTES</span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <button onClick={() => setSelectedEquipment(null)} className="flex-1 py-4 text-sm bg-gray-700 hover:bg-gray-600 rounded-2xl font-black text-gray-300 active:scale-95 transition-all">CERRAR</button>
+              <button onClick={() => { 
+                setReportForm({ ...reportForm, serie: selectedEquipment.serie, modelo: selectedEquipment.modelo || '', descripcionEquipo: selectedEquipment.descripcion || '', cliente: selectedEquipment.cliente || '' }); 
+                setSelectedEquipment(null); 
+                setMenuSubScreen('generarOS'); 
+              }} className="flex-1 py-4 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black active:scale-95 transition-all shadow-lg shadow-blue-500/30">REPORTAR</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showGenerateConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-green-400 uppercase">Confirmar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">La información se enviará a la nube.</p><div className="flex gap-4"><button onClick={() => setShowGenerateConfirm(false)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">CERRAR</button><button onClick={() => { setShowGenerateConfirm(false); submitReport(); }} className="flex-1 py-5 text-lg bg-green-600 text-white rounded-2xl font-black">ENVIAR</button></div></div></div>)}
       {contactToDelete && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-red-400 uppercase">Eliminar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Eliminar a <br/><span className="text-white">{contactToDelete.name}</span>?</p><div className="flex gap-4"><button onClick={() => setContactToDelete(null)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { deleteContact(contactToDelete.id); setContactToDelete(null); setMessage("CONTACTO ELIMINADO."); setTimeout(() => setMessage(""), 3000); }} className="flex-1 py-5 text-lg bg-red-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
     </div>
