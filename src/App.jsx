@@ -398,20 +398,25 @@ const MenuScreen = ({
           const resp = (item.responsable || '').toLowerCase();
           // Si es supervisor, ve todo. Si no, solo los equipos que coincidan con su nombre.
           const matchEng = isSupervisor ? true : (eng.includes(resp) || resp.includes(eng));
-          const matchTerm = (item.serie + (item.modelo || '') + (item.cliente || '')).toLowerCase().includes(searchTerm.toLowerCase());
+          // Añadimos item.descripcion al buscador para que también se pueda buscar por descripción
+          const matchTerm = (item.serie + (item.modelo || '') + (item.descripcion || '') + (item.cliente || '')).toLowerCase().includes(searchTerm.toLowerCase());
           return matchEng && matchTerm;
         });
         return (
-          <div className="bg-gray-800 rounded-[2rem] shadow-sm border border-gray-700 flex flex-col overflow-hidden animate-fadeIn">
-            <div className="p-4 bg-gray-900 border-b border-gray-700 sticky top-0 z-10"><input type="text" placeholder="Buscar por Serie o Hospital..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
-            <div className="flex-1 overflow-auto text-xs min-h-[400px]">
+          <div className="bg-gray-800 rounded-[2rem] shadow-sm border border-gray-700 flex flex-col animate-fadeIn">
+            <div className="p-4 bg-gray-900 border-b border-gray-700 sticky top-[-1px] z-30 rounded-t-[2rem]"><input type="text" placeholder="Buscar por Serie, Descripción o Hospital..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
+            <div className="flex-1 text-xs min-h-[400px]">
               <table className="w-full">
-                <thead className="bg-gray-900 sticky top-0 font-black text-gray-400"><tr><th className="p-4 text-left">SERIE</th><th className="p-4 text-left">EQUIPO</th><th className="p-4 text-center">ST</th></tr></thead>
+                <thead className="bg-gray-900 font-black text-gray-400"><tr><th className="p-4 text-left">SERIE</th><th className="p-4 text-left">EQUIPO</th><th className="p-4 text-center">ST</th></tr></thead>
                 <tbody className="divide-y divide-gray-700 text-left">
                   {filtered.length > 0 ? filtered.map(item => (
                     <tr key={item.id} onClick={() => setSelectedEquipment(item)} className="hover:bg-gray-700 cursor-pointer transition-colors active:bg-gray-600">
                       <td className="p-4 font-mono font-black text-blue-400 text-sm">{item.serie}</td>
-                      <td className="p-4"><div className="font-black text-white uppercase text-[11px]">{item.modelo}</div><div className="text-[10px] text-gray-400 uppercase tracking-tighter truncate max-w-[140px]">{item.cliente}</div></td>
+                      <td className="p-4">
+                        {/* Se cambia item.modelo por item.descripcion */}
+                        <div className="font-black text-white uppercase text-[11px]">{item.descripcion || 'SIN DESCRIPCIÓN'}</div>
+                        <div className="text-[10px] text-gray-400 uppercase tracking-tighter truncate max-w-[140px]">{item.cliente}</div>
+                      </td>
                       <td className="p-4 text-center text-xl">{sheetOrders.some(so => so.serie === item.serie && so.status && so.status.toLowerCase().includes('abierto')) ? '🔴' : '🟢'}</td>
                     </tr>
                   )) : (<tr><td colSpan="3" className="p-10 text-center font-bold text-gray-500">Sin equipos asignados</td></tr>)}
@@ -472,8 +477,8 @@ const MenuScreen = ({
         });
 
         return (
-          <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] overflow-hidden animate-fadeIn pb-20">
-            <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4">
+          <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20">
+            <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4 sticky top-[-1px] z-30 rounded-t-[2rem]">
                 <div className="flex justify-between items-center"><h3 className="text-xl font-black text-purple-300 tracking-tight uppercase">Agenda</h3>{!showAddContactForm && (<button onClick={() => setShowAddContactForm(true)} className="bg-purple-600 text-white text-[11px] font-black py-2 px-5 rounded-full shadow-lg active:scale-90 transition-all uppercase">Nuevo+</button>)}</div>
                 
                 {!showAddContactForm && (
@@ -507,7 +512,7 @@ const MenuScreen = ({
                   </div>
                 )}
             </div>
-            <div className="flex-1 overflow-auto p-5 space-y-4 min-h-[400px]">
+            <div className="flex-1 p-5 space-y-4 min-h-[400px]">
               {filteredContacts.length > 0 ? filteredContacts.map(c => (
                 <div key={c.id} className="p-6 border-l-[12px] border-l-purple-500 border border-gray-700 rounded-[1.5rem] bg-gray-800 text-left group shadow-sm">
                   <p className="font-black text-white text-base uppercase">{c.name}</p>
@@ -538,8 +543,8 @@ const MenuScreen = ({
             });
 
             return (
-              <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] overflow-hidden animate-fadeIn pb-20">
-                <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4">
+              <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20">
+                <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4 sticky top-[-1px] z-30 rounded-t-[2rem]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <button onClick={() => { setCurrentSparePartView(null); setSparePartsSearch(''); }} className="mr-4 w-10 h-10 flex items-center justify-center bg-gray-700 rounded-lg text-indigo-400 hover:bg-gray-600 shadow-sm text-lg">←</button>
@@ -554,10 +559,10 @@ const MenuScreen = ({
                     onChange={e => setSparePartsSearch(e.target.value)} 
                   />
                 </div>
-                <div className="flex-1 overflow-auto p-2 min-h-[400px]">
+                <div className="flex-1 p-2 min-h-[400px]">
                   {loadingSpares ? <div className="text-center p-20 animate-pulse text-indigo-400 font-black">Cargando catálogo...</div> : (
                     <table className="w-full text-xs text-left border-collapse">
-                      <thead className="bg-gray-900 sticky top-0">
+                      <thead className="bg-gray-900">
                         <tr>
                           {sparePartsData[0] && Object.keys(sparePartsData[0]).map(k => (
                             <th key={k} className="p-3 border-b border-gray-700 font-black text-gray-400 uppercase tracking-tighter">{k}</th>
@@ -695,12 +700,12 @@ const MenuScreen = ({
         if (selectedOrderDetails) {
           const so = selectedOrderDetails;
           return (
-            <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] overflow-hidden animate-fadeIn pb-20 shadow-sm text-left">
-              <div className="p-6 bg-gray-900 border-b border-gray-700 flex items-center">
+            <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20 shadow-sm text-left">
+              <div className="p-6 bg-gray-900 border-b border-gray-700 flex items-center sticky top-[-1px] z-30 rounded-t-[2rem]">
                 <button onClick={() => setSelectedOrderDetails(null)} className="mr-5 w-10 h-10 flex items-center justify-center bg-gray-700 rounded-lg text-blue-400 hover:bg-gray-600 shadow-sm text-lg">←</button>
                 <h3 className="font-black text-blue-300 tracking-tight uppercase text-sm">Detalle de Orden</h3>
               </div>
-              <div className="p-6 space-y-6 overflow-y-auto min-h-[500px]">
+              <div className="p-6 space-y-6 min-h-[500px]">
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="text-[11px] font-black text-blue-500 uppercase tracking-widest">Servicio</p>
@@ -793,9 +798,9 @@ const MenuScreen = ({
         }
 
         return (
-          <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] overflow-hidden animate-fadeIn pb-20">
-            <div className="p-6 bg-gray-900 border-b border-gray-700"><h3 className="text-lg font-black text-blue-300 tracking-tight uppercase">Historial de Órdenes</h3></div>
-            <div className="flex-1 overflow-auto p-5 space-y-4 min-h-[400px]">
+          <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20">
+            <div className="p-6 bg-gray-900 border-b border-gray-700 sticky top-[-1px] z-30 rounded-t-[2rem]"><h3 className="text-lg font-black text-blue-300 tracking-tight uppercase">Historial de Órdenes</h3></div>
+            <div className="flex-1 p-5 space-y-4 min-h-[400px]">
               {myOrders.length > 0 ? myOrders.map(so => (
                 <div 
                   key={so.id} 
