@@ -406,44 +406,38 @@ const MenuScreen = ({
           return matchEng && matchTerm;
         });
         return (
-          <div className="bg-gray-800 rounded-[2rem] shadow-sm border border-gray-700 flex flex-col animate-fadeIn overflow-hidden">
-            <div className="p-4 bg-gray-900 border-b border-gray-700 sticky top-[-1px] z-50 rounded-t-[2rem]">
-              <input type="text" placeholder="Buscar por Serie, Descripción o Hospital..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <div className="bg-gray-800 rounded-[2rem] shadow-sm border border-gray-700 flex flex-col animate-fadeIn relative">
+            <div className="sticky top-0 z-50 bg-gray-900 rounded-t-[2rem] border-b border-gray-700 shadow-md">
+              <div className="p-4 border-b border-gray-700">
+                <input type="text" placeholder="Buscar por Serie, Descripción o Hospital..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+              </div>
+              <div className="flex px-2 font-black text-gray-400 text-[10px] uppercase tracking-wider">
+                <div className="py-4 px-2 w-[110px] shrink-0 text-left">SERIE</div>
+                <div className="py-4 px-2 flex-1 text-left">EQUIPO</div>
+                <div className="py-4 px-2 w-12 shrink-0 text-center">ST</div>
+              </div>
             </div>
-            <div className="flex-1 text-xs min-h-[400px]">
-              <table className="w-full table-fixed border-collapse">
-                <thead className="bg-gray-900 font-black text-gray-400 text-[10px] uppercase tracking-wider sticky top-[79px] z-40">
-                  <tr>
-                    <th className="py-4 px-2 text-left w-[110px] bg-gray-900">SERIE</th>
-                    <th className="py-4 px-2 text-left bg-gray-900">EQUIPO</th>
-                    <th className="py-4 px-2 text-center w-12 bg-gray-900">ST</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-700 text-left">
-                  {filtered.length > 0 ? filtered.map(item => (
-                    <tr key={item.id} onClick={() => setSelectedEquipment(item)} className="hover:bg-gray-700 cursor-pointer transition-colors active:bg-gray-600">
-                      <td className="py-4 px-2 font-mono font-black text-blue-400 text-[11px] truncate">
-                        {item.serie}
-                      </td>
-                      <td className="py-4 px-2 overflow-hidden">
-                        <div className="font-black text-white uppercase text-[10px] truncate leading-tight">
-                          {item.descripcion || 'SIN DESCRIPCIÓN'}
-                        </div>
-                        <div className="text-[9px] text-gray-400 uppercase tracking-tighter truncate mt-0.5">
-                          {item.cliente}
-                        </div>
-                      </td>
-                      <td className="py-4 px-2 text-center text-lg">
-                        {sheetOrders.some(so => so.serie === item.serie && so.status?.toLowerCase().includes('abierto')) ? '🔴' : '🟢'}
-                      </td>
-                    </tr>
-                  )) : (
-                    <tr>
-                      <td colSpan="3" className="p-10 text-center font-bold text-gray-500 uppercase">Sin equipos asignados</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+            <div className="flex-1 text-xs min-h-[400px] flex flex-col divide-y divide-gray-700 bg-gray-800 rounded-b-[2rem] text-left">
+              {filtered.length > 0 ? filtered.map(item => (
+                <div key={item.id} onClick={() => setSelectedEquipment(item)} className="flex px-2 hover:bg-gray-700 cursor-pointer transition-colors active:bg-gray-600 last:rounded-b-[2rem]">
+                  <div className="py-4 px-2 w-[110px] shrink-0 font-mono font-black text-blue-400 text-[11px] truncate self-center">
+                    {item.serie}
+                  </div>
+                  <div className="py-4 px-2 flex-1 overflow-hidden self-center">
+                    <div className="font-black text-white uppercase text-[10px] truncate leading-tight">
+                      {item.descripcion || 'SIN DESCRIPCIÓN'}
+                    </div>
+                    <div className="text-[9px] text-gray-400 uppercase tracking-tighter truncate mt-0.5">
+                      {item.cliente}
+                    </div>
+                  </div>
+                  <div className="py-4 px-2 w-12 shrink-0 text-center text-lg self-center">
+                    {sheetOrders.some(so => so.serie === item.serie && so.status?.toLowerCase().includes('abierto')) ? '🔴' : '🟢'}
+                  </div>
+                </div>
+              )) : (
+                <div className="p-10 text-center font-bold text-gray-500 uppercase">Sin equipos asignados</div>
+              )}
             </div>
           </div>
         );
