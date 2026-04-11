@@ -187,10 +187,7 @@ const MenuScreen = ({
   contacts, addContact, deleteContact, serviceOrders, sheetOrders, setSheetOrders, equipment,
   documentationSubScreen, setDocumentationSubScreen, currentSparePartView, setCurrentSparePartView
 }) => {
-  // Identificar si el usuario actual tiene permisos para asignar a otros
   const isSupervisor = ['WSMG DELFINO MUÑOZ', 'WSPL CARLOS LUIS'].includes(loginForm.engineerName);
-
-  // Referencia al contenedor de scroll principal para resetear posición en cambios de vista
   const contentScrollRef = useRef(null);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -217,7 +214,6 @@ const MenuScreen = ({
     catalogoFalla: 'FKMX-CS', codigoFalla: '', descripcionFalla: ''
   });
 
-  // Efecto para resetear el scroll al inicio cada vez que cambia la sección o se selecciona algo
   useEffect(() => {
     if (contentScrollRef.current) {
       contentScrollRef.current.scrollTop = 0;
@@ -233,7 +229,6 @@ const MenuScreen = ({
     });
   };
 
-  // --- LÓGICA DE RETORNO INTELIGENTE ---
   const handleSmartBack = () => {
     if (selectedOrderDetails) {
       setSelectedOrderDetails(null);
@@ -331,7 +326,7 @@ const MenuScreen = ({
         try {
           await updateDoc(orderRef, { status: 'Cerrado', closedAt: new Date().toISOString() });
         } catch (firebaseErr) {
-          console.warn("El documento no se encontró en la base de datos de Firebase, pero continuará la sincronización en Sheets.", firebaseErr);
+          console.warn("El documento no se encontró en la base de datos de Firebase.", firebaseErr);
         }
       }
       
@@ -412,16 +407,16 @@ const MenuScreen = ({
         });
         return (
           <div className="bg-gray-800 rounded-[2rem] shadow-sm border border-gray-700 flex flex-col animate-fadeIn overflow-hidden">
-            <div className="p-4 bg-gray-900 border-b border-gray-700 sticky top-[-1px] z-30 rounded-t-[2rem]">
+            <div className="p-4 bg-gray-900 border-b border-gray-700 sticky top-[-1px] z-50 rounded-t-[2rem]">
               <input type="text" placeholder="Buscar por Serie, Descripción o Hospital..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>
             <div className="flex-1 text-xs min-h-[400px]">
               <table className="w-full table-fixed border-collapse">
-                <thead className="bg-gray-900 font-black text-gray-400 text-[10px] uppercase tracking-wider">
+                <thead className="bg-gray-900 font-black text-gray-400 text-[10px] uppercase tracking-wider sticky top-[79px] z-40">
                   <tr>
-                    <th className="py-4 px-2 text-left w-[110px]">SERIE</th>
-                    <th className="py-4 px-2 text-left">EQUIPO</th>
-                    <th className="py-4 px-2 text-center w-12">ST</th>
+                    <th className="py-4 px-2 text-left w-[110px] bg-gray-900">SERIE</th>
+                    <th className="py-4 px-2 text-left bg-gray-900">EQUIPO</th>
+                    <th className="py-4 px-2 text-center w-12 bg-gray-900">ST</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700 text-left">
@@ -504,8 +499,8 @@ const MenuScreen = ({
         });
 
         return (
-          <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20">
-            <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4 sticky top-[-1px] z-30 rounded-t-[2rem]">
+          <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20 overflow-hidden">
+            <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4 sticky top-[-1px] z-50 rounded-t-[2rem]">
                 <div className="flex justify-between items-center"><h3 className="text-xl font-black text-purple-300 tracking-tight uppercase">Agenda</h3>{!showAddContactForm && (<button onClick={() => setShowAddContactForm(true)} className="bg-purple-600 text-white text-[11px] font-black py-2 px-5 rounded-full shadow-lg active:scale-90 transition-all uppercase">Nuevo+</button>)}</div>
                 
                 {!showAddContactForm && (
@@ -571,7 +566,7 @@ const MenuScreen = ({
 
             return (
               <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20 overflow-hidden">
-                <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4 sticky top-[-1px] z-30 rounded-t-[2rem]">
+                <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4 sticky top-[-1px] z-50 rounded-t-[2rem]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <button onClick={() => { setCurrentSparePartView(null); setSparePartsSearch(''); }} className="mr-4 w-10 h-10 flex items-center justify-center bg-gray-700 rounded-lg text-indigo-400 hover:bg-gray-600 shadow-sm text-lg">←</button>
@@ -589,7 +584,7 @@ const MenuScreen = ({
                 <div className="flex-1 p-2 min-h-[400px]">
                   {loadingSpares ? <div className="text-center p-20 animate-pulse text-indigo-400 font-black">Cargando catálogo...</div> : (
                     <table className="w-full text-[10px] text-left border-collapse table-fixed">
-                      <thead className="bg-gray-900">
+                      <thead className="bg-gray-900 sticky top-[135px] z-40 shadow-md">
                         <tr>
                           {sparePartsData[0] && Object.keys(sparePartsData[0]).map(k => {
                             const key = k.toLowerCase();
@@ -597,7 +592,7 @@ const MenuScreen = ({
                             if (key.includes('parte') || key.includes('no') || key.includes('cod')) width = "w-[90px]";
                             else if (sparePartsData[0][k]?.includes('drive.google.com')) width = "w-[80px]";
                             return (
-                              <th key={k} className={`p-3 border-b border-gray-700 font-black text-gray-400 uppercase tracking-tighter ${width}`}>
+                              <th key={k} className={`p-3 border-b border-gray-700 font-black text-gray-400 uppercase tracking-tighter bg-gray-900 ${width}`}>
                                 {k}
                               </th>
                             );
@@ -735,7 +730,7 @@ const MenuScreen = ({
           const so = selectedOrderDetails;
           return (
             <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20 shadow-sm text-left">
-              <div className="p-6 bg-gray-900 border-b border-gray-700 flex items-center sticky top-[-1px] z-30 rounded-t-[2rem]">
+              <div className="p-6 bg-gray-900 border-b border-gray-700 flex items-center sticky top-[-1px] z-50 rounded-t-[2rem]">
                 <button onClick={() => setSelectedOrderDetails(null)} className="mr-5 w-10 h-10 flex items-center justify-center bg-gray-700 rounded-lg text-blue-400 hover:bg-gray-600 shadow-sm text-lg">←</button>
                 <h3 className="font-black text-blue-300 tracking-tight uppercase text-sm">Detalle de Orden</h3>
               </div>
@@ -832,8 +827,8 @@ const MenuScreen = ({
         }
 
         return (
-          <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20">
-            <div className="p-6 bg-gray-900 border-b border-gray-700 sticky top-[-1px] z-30 rounded-t-[2rem]"><h3 className="text-lg font-black text-blue-300 tracking-tight uppercase">Historial de Órdenes</h3></div>
+          <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20 shadow-sm">
+            <div className="p-6 bg-gray-900 border-b border-gray-700 sticky top-[-1px] z-50 rounded-t-[2rem]"><h3 className="text-lg font-black text-blue-300 tracking-tight uppercase">Historial de Órdenes</h3></div>
             <div className="flex-1 p-5 space-y-4 min-h-[400px]">
               {myOrders.length > 0 ? myOrders.map(so => (
                 <div 
@@ -880,8 +875,7 @@ const MenuScreen = ({
         {menuSubScreen === 'dashboard' && (<button onClick={() => setScreen('landing')} className="w-12 h-12 flex items-center justify-center bg-gray-700 text-red-400 rounded-xl active:bg-gray-600 hover:bg-gray-600 transition-all"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg></button>)}
       </div>
       
-      {/* Contenedor principal de scroll con bloqueo de rebote */}
-      <div ref={contentScrollRef} className="flex-1 overflow-y-auto scroll-smooth pb-10 overscroll-none">
+      <div ref={contentScrollRef} className="flex-1 overflow-y-auto scroll-smooth pb-10 overscroll-none overflow-x-hidden">
         {menuSubScreen === 'dashboard' ? (
           <div className="grid gap-6 animate-fadeIn">
             <MenuButton label="Inventario" subScreenId="equipos" svgIcon={<EquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} />
@@ -1199,11 +1193,11 @@ export default function App() {
   return (
     <div className="min-h-[100dvh] bg-gray-900 md:p-4 flex items-center justify-center font-sans overflow-hidden overscroll-none">
       <div className="w-full h-[100dvh] md:h-auto md:min-h-[850px] md:max-h-[95vh] max-w-[480px] bg-gray-800 p-6 md:p-8 md:rounded-[3rem] md:border-8 border-gray-700 relative flex flex-col md:shadow-2xl overscroll-none">
-        <div className="absolute top-8 left-0 right-0 px-8 z-50 pointer-events-none text-center">
-          {error && <div className="bg-red-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{error}</div>}
-          {message && screen !== 'menu' && <div className="bg-green-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{message}</div>}
+        <div className="absolute top-8 left-0 right-0 px-8 z-[60] pointer-events-none text-center">
+          {error && <div className="bg-red-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest pointer-events-auto">{error}</div>}
+          {message && screen !== 'menu' && <div className="bg-green-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest pointer-events-auto">{message}</div>}
         </div>
-        <div className="flex-1 overflow-y-auto scroll-smooth">
+        <div className="flex-1 overflow-y-auto scroll-smooth overscroll-none overflow-x-hidden">
           {screen === 'landing' && <LandingScreen setScreen={handleScreenChange} />}
           {screen === 'register' && <RegisterScreen form={registerForm} onChange={e => setRegisterForm({...registerForm, [e.target.name]: e.target.value})} onSubmit={registerEngineer} loading={loading} setScreen={handleScreenChange} />}
           {screen === 'login' && <LoginScreen form={loginForm} onChange={e => setLoginForm({...loginForm, [e.target.name]: e.target.value})} onSubmit={loginEngineer} loading={loading} setScreen={handleScreenChange} />}
@@ -1221,13 +1215,7 @@ export default function App() {
         <div className="mt-4 pt-4 border-t border-gray-700 text-center flex justify-center items-center gap-2"><div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div><p className="text-[9px] font-black text-gray-500 tracking-[0.4em] uppercase">FRESENIUS KABI • Engineering Hub</p></div>
       </div>
       <style>{`
-        /* Bloqueo de pull-to-refresh en navegadores móviles */
-        html, body { 
-          overscroll-behavior-y: none; 
-          height: 100%; 
-          overflow: hidden; 
-        }
-        
+        html, body { overscroll-behavior-y: none; height: 100%; overflow: hidden; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideDown { from { max-height: 0; opacity: 0; } to { max-height: 1000px; opacity: 1; } }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -1237,11 +1225,7 @@ export default function App() {
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
         input:focus, textarea:focus { scroll-margin-bottom: 20px; }
-        * { 
-          scrollbar-color: #4b5563 transparent; 
-          -webkit-tap-highlight-color: transparent;
-        }
-        
+        * { scrollbar-color: #4b5563 transparent; -webkit-tap-highlight-color: transparent; }
         .overscroll-none { overscroll-behavior: none; }
       `}</style>
     </div>
