@@ -150,7 +150,7 @@ const LandingScreen = ({ setScreen }) => (
       <div className="text-left"><span className="block font-black text-white text-xl uppercase tracking-tight leading-none">Registrarse</span><span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-2">Crear nueva cuenta</span></div>
     </button>
     <button onClick={() => setScreen('login')} className="p-8 bg-blue-600 rounded-[2.5rem] shadow-xl hover:bg-blue-700 transition-all group flex items-center gap-6">
-      <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg></div>
+      <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg></div>
       <div className="text-left"><span className="block font-black text-white text-xl uppercase tracking-tight leading-none">Ingresar</span><span className="text-[11px] font-bold text-blue-200 uppercase tracking-widest mt-2">Acceso restringido</span></div>
     </button>
   </div>
@@ -570,7 +570,7 @@ const MenuScreen = ({
             });
 
             return (
-              <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20">
+              <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20 overflow-hidden">
                 <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4 sticky top-[-1px] z-30 rounded-t-[2rem]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -588,23 +588,30 @@ const MenuScreen = ({
                 </div>
                 <div className="flex-1 p-2 min-h-[400px]">
                   {loadingSpares ? <div className="text-center p-20 animate-pulse text-indigo-400 font-black">Cargando catálogo...</div> : (
-                    <table className="w-full text-xs text-left border-collapse">
+                    <table className="w-full text-[10px] text-left border-collapse table-fixed">
                       <thead className="bg-gray-900">
                         <tr>
-                          {sparePartsData[0] && Object.keys(sparePartsData[0]).map(k => (
-                            <th key={k} className="p-3 border-b border-gray-700 font-black text-gray-400 uppercase tracking-tighter">{k}</th>
-                          ))}
+                          {sparePartsData[0] && Object.keys(sparePartsData[0]).map(k => {
+                            const key = k.toLowerCase();
+                            let width = "";
+                            if (key.includes('parte') || key.includes('no') || key.includes('cod')) width = "w-[90px]";
+                            else if (sparePartsData[0][k]?.includes('drive.google.com')) width = "w-[80px]";
+                            return (
+                              <th key={k} className={`p-3 border-b border-gray-700 font-black text-gray-400 uppercase tracking-tighter ${width}`}>
+                                {k}
+                              </th>
+                            );
+                          })}
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-700">
                         {filteredSpareParts.length > 0 ? filteredSpareParts.map((row) => (
                           <tr key={row._id} className="hover:bg-gray-700 transition-colors">
                             {Object.values(row).map((val, j) => (
-                              <td key={j} className="p-3 align-middle text-gray-200">
+                              <td key={j} className="p-3 align-middle text-gray-200 whitespace-normal break-words leading-relaxed font-bold">
                                 {typeof val === 'string' && val.includes('drive.google.com') ? (
                                   <div className="flex flex-col gap-2">
-                                    <span className="text-gray-300 font-medium">{val.split('https://')[0]}</span>
-                                    <div className="relative group w-20 h-20">
+                                    <div className="relative group w-16 h-16">
                                       {(() => {
                                         const idMatch = val.match(/\/d\/([a-zA-Z0-9_-]+)/);
                                         const driveId = idMatch ? idMatch[1] : null;
@@ -629,7 +636,7 @@ const MenuScreen = ({
                                     </div>
                                   </div>
                                 ) : (
-                                  <span className="text-gray-200 font-medium">{val}</span>
+                                  <span className="text-gray-200">{val}</span>
                                 )}
                               </td>
                             ))}
@@ -873,7 +880,7 @@ const MenuScreen = ({
         {menuSubScreen === 'dashboard' && (<button onClick={() => setScreen('landing')} className="w-12 h-12 flex items-center justify-center bg-gray-700 text-red-400 rounded-xl active:bg-gray-600 hover:bg-gray-600 transition-all"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg></button>)}
       </div>
       
-      {/* Añadida la referencia contentScrollRef aquí para manejar el reset del scroll */}
+      {/* Contenedor principal de scroll con bloqueo de rebote */}
       <div ref={contentScrollRef} className="flex-1 overflow-y-auto scroll-smooth pb-10 overscroll-none">
         {menuSubScreen === 'dashboard' ? (
           <div className="grid gap-6 animate-fadeIn">
