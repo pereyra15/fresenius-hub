@@ -150,7 +150,7 @@ const LandingScreen = ({ setScreen }) => (
       <div className="text-left"><span className="block font-black text-white text-xl uppercase tracking-tight leading-none">Registrarse</span><span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-2">Crear nueva cuenta</span></div>
     </button>
     <button onClick={() => setScreen('login')} className="p-8 bg-blue-600 rounded-[2.5rem] shadow-xl hover:bg-blue-700 transition-all group flex items-center gap-6">
-      <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg></div>
+      <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg></div>
       <div className="text-left"><span className="block font-black text-white text-xl uppercase tracking-tight leading-none">Ingresar</span><span className="text-[11px] font-bold text-blue-200 uppercase tracking-widest mt-2">Acceso restringido</span></div>
     </button>
   </div>
@@ -411,22 +411,42 @@ const MenuScreen = ({
           return matchEng && matchTerm;
         });
         return (
-          <div className="bg-gray-800 rounded-[2rem] shadow-sm border border-gray-700 flex flex-col animate-fadeIn">
-            <div className="p-4 bg-gray-900 border-b border-gray-700 sticky top-[-1px] z-30 rounded-t-[2rem]"><input type="text" placeholder="Buscar por Serie, Descripción o Hospital..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
+          <div className="bg-gray-800 rounded-[2rem] shadow-sm border border-gray-700 flex flex-col animate-fadeIn overflow-hidden">
+            <div className="p-4 bg-gray-900 border-b border-gray-700 sticky top-[-1px] z-30 rounded-t-[2rem]">
+              <input type="text" placeholder="Buscar por Serie, Descripción o Hospital..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+            </div>
             <div className="flex-1 text-xs min-h-[400px]">
-              <table className="w-full">
-                <thead className="bg-gray-900 font-black text-gray-400"><tr><th className="p-4 text-left">SERIE</th><th className="p-4 text-left">EQUIPO</th><th className="p-4 text-center">ST</th></tr></thead>
+              <table className="w-full table-fixed border-collapse">
+                <thead className="bg-gray-900 font-black text-gray-400 text-[10px] uppercase tracking-wider">
+                  <tr>
+                    <th className="py-4 px-2 text-left w-[110px]">SERIE</th>
+                    <th className="py-4 px-2 text-left">EQUIPO</th>
+                    <th className="py-4 px-2 text-center w-12">ST</th>
+                  </tr>
+                </thead>
                 <tbody className="divide-y divide-gray-700 text-left">
                   {filtered.length > 0 ? filtered.map(item => (
                     <tr key={item.id} onClick={() => setSelectedEquipment(item)} className="hover:bg-gray-700 cursor-pointer transition-colors active:bg-gray-600">
-                      <td className="p-4 font-mono font-black text-blue-400 text-sm">{item.serie}</td>
-                      <td className="p-4">
-                        <div className="font-black text-white uppercase text-[11px]">{item.descripcion || 'SIN DESCRIPCIÓN'}</div>
-                        <div className="text-[10px] text-gray-400 uppercase tracking-tighter truncate max-w-[140px]">{item.cliente}</div>
+                      <td className="py-4 px-2 font-mono font-black text-blue-400 text-[11px] truncate">
+                        {item.serie}
                       </td>
-                      <td className="p-4 text-center text-xl">{sheetOrders.some(so => so.serie === item.serie && so.status && so.status.toLowerCase().includes('abierto')) ? '🔴' : '🟢'}</td>
+                      <td className="py-4 px-2 overflow-hidden">
+                        <div className="font-black text-white uppercase text-[10px] truncate leading-tight">
+                          {item.descripcion || 'SIN DESCRIPCIÓN'}
+                        </div>
+                        <div className="text-[9px] text-gray-400 uppercase tracking-tighter truncate mt-0.5">
+                          {item.cliente}
+                        </div>
+                      </td>
+                      <td className="py-4 px-2 text-center text-lg">
+                        {sheetOrders.some(so => so.serie === item.serie && so.status?.toLowerCase().includes('abierto')) ? '🔴' : '🟢'}
+                      </td>
                     </tr>
-                  )) : (<tr><td colSpan="3" className="p-10 text-center font-bold text-gray-500">Sin equipos asignados</td></tr>)}
+                  )) : (
+                    <tr>
+                      <td colSpan="3" className="p-10 text-center font-bold text-gray-500 uppercase">Sin equipos asignados</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
