@@ -200,6 +200,7 @@ const MenuScreen = ({
   const [showAddContactForm, setShowAddContactForm] = useState(false);
   const [contactToDelete, setContactToDelete] = useState(null);
   const [newContact, setNewContact] = useState({ name: '', phone: '', unit: '', email: '' });
+  const [selectedContact, setSelectedContact] = useState(null);
   
   const [sparePartsData, setSparePartsData] = useState([]);
   const [loadingSpares, setLoadingSpares] = useState(false);
@@ -494,8 +495,9 @@ const MenuScreen = ({
         });
 
         return (
-          <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20 overflow-hidden">
-            <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4 sticky top-[-1px] z-50 rounded-t-[2rem]">
+          <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn relative">
+            <div className="sticky top-0 z-50 bg-gray-900 rounded-t-[2rem] border-b border-gray-700 shadow-md">
+              <div className="p-5 flex flex-col gap-4">
                 <div className="flex justify-between items-center"><h3 className="text-xl font-black text-purple-300 tracking-tight uppercase">Agenda</h3>{!showAddContactForm && (<button onClick={() => setShowAddContactForm(true)} className="bg-purple-600 text-white text-[11px] font-black py-2 px-5 rounded-full shadow-lg active:scale-90 transition-all uppercase">Nuevo+</button>)}</div>
                 
                 {!showAddContactForm && (
@@ -528,21 +530,25 @@ const MenuScreen = ({
                     </div>
                   </div>
                 )}
+              </div>
             </div>
-            <div className="flex-1 p-5 space-y-4 min-h-[400px]">
+            <div className="flex-1 p-5 space-y-4 min-h-[400px] bg-gray-800 rounded-b-[2rem]">
               {filteredContacts.length > 0 ? filteredContacts.map(c => (
-                <div key={c.id} className="p-6 border-l-[12px] border-l-purple-500 border border-gray-700 rounded-[1.5rem] bg-gray-800 text-left group shadow-sm">
-                  <p className="font-black text-white text-base uppercase">{c.name}</p>
-                  <p className="text-[11px] text-gray-400 font-bold uppercase mt-1">{c.client}</p>
-                  <div className="flex justify-between items-center mt-3">
-                    <p className="text-sm font-black text-purple-400 font-mono">📞 {c.phone}</p>
-                    <button 
-                      onClick={() => setContactToDelete(c)} 
-                      className="text-red-400 bg-red-900/50 w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-all hover:bg-red-900 text-lg"
-                    >
-                      ✕
-                    </button>
+                <div 
+                  key={c.id} 
+                  onClick={() => setSelectedContact(c)}
+                  className="p-6 border-l-[12px] border-l-purple-500 border border-gray-700 rounded-[1.5rem] bg-gray-800 text-left group shadow-sm flex items-center justify-between gap-4 cursor-pointer hover:bg-gray-700 active:scale-[0.98] transition-all"
+                >
+                  <div className="flex-1">
+                    <p className="font-black text-white text-base uppercase leading-tight">{c.name}</p>
+                    <p className="text-[11px] text-gray-400 font-bold uppercase mt-1 leading-tight">{c.client}</p>
                   </div>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setContactToDelete(c); }} 
+                    className="text-red-400 bg-red-900/50 w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-all hover:bg-red-900 text-lg shrink-0"
+                  >
+                    ✕
+                  </button>
                 </div>
               )) : (
                 <div className="p-10 text-center font-bold text-gray-500 uppercase tracking-widest text-xs">Sin resultados</div>
@@ -942,6 +948,55 @@ const MenuScreen = ({
       {showGenerateConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-green-400 uppercase">Confirmar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">La información se enviará a la nube.</p><div className="flex gap-4"><button onClick={() => setShowGenerateConfirm(false)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">CERRAR</button><button onClick={() => { setShowGenerateConfirm(false); submitReport(); }} className="flex-1 py-5 text-lg bg-green-600 text-white rounded-2xl font-black">ENVIAR</button></div></div></div>)}
       {contactToDelete && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-red-400 uppercase">Eliminar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Eliminar a <br/><span className="text-white">{contactToDelete.name}</span>?</p><div className="flex gap-4"><button onClick={() => setContactToDelete(null)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { deleteContact(contactToDelete.id); setContactToDelete(null); setMessage("CONTACTO ELIMINADO."); setTimeout(() => setMessage(""), 3000); }} className="flex-1 py-5 text-lg bg-red-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
       
+      {selectedContact && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm" onClick={() => setSelectedContact(null)}>
+          <div className="bg-gray-800 p-8 rounded-[2.5rem] w-full max-w-sm text-left shadow-2xl animate-popIn border border-gray-700" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
+              <h3 className="font-black text-xl uppercase text-purple-400 tracking-tight">Detalles de Contacto</h3>
+              <button onClick={() => setSelectedContact(null)} className="text-gray-400 hover:text-white text-2xl active:scale-90 transition-transform">✕</button>
+            </div>
+            
+            <div className="space-y-5 mb-8">
+              <div>
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Nombre</p>
+                <p className="text-xl font-black text-white leading-tight uppercase mt-1">{selectedContact.name}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Hospital / Unidad</p>
+                <p className="text-sm font-black text-gray-200 uppercase mt-1">{selectedContact.client}</p>
+              </div>
+              <div className="flex items-center gap-4 bg-gray-700/50 p-4 rounded-2xl border border-gray-600">
+                <span className="text-2xl">📞</span>
+                <div>
+                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Teléfono</p>
+                  <p className="text-lg font-black text-blue-400 font-mono mt-0.5">{selectedContact.phone}</p>
+                </div>
+              </div>
+              {selectedContact.email && (
+                <div className="flex items-center gap-4 bg-gray-700/50 p-4 rounded-2xl border border-gray-600">
+                  <span className="text-2xl">✉️</span>
+                  <div className="overflow-hidden">
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Correo Electrónico</p>
+                    <p className="text-xs font-bold text-gray-300 truncate mt-0.5">{selectedContact.email}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-4">
+              <button onClick={() => setSelectedContact(null)} className="flex-1 py-4 text-sm bg-gray-700 hover:bg-gray-600 rounded-2xl font-black text-gray-300 active:scale-95 transition-all">CERRAR</button>
+              <a 
+                href={`tel:${selectedContact.phone}`} 
+                className="flex-1 py-4 text-sm bg-green-600 hover:bg-green-500 text-white rounded-2xl font-black active:scale-95 transition-all shadow-lg shadow-green-500/30 flex justify-center items-center gap-2 text-center"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                LLAMAR
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {zoomedImageId && (
         <div 
           className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-[200] backdrop-blur-md transition-opacity"
