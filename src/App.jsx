@@ -559,86 +559,93 @@ const MenuScreen = ({
             });
 
             return (
-              <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20 overflow-hidden">
-                <div className="p-5 bg-gray-900 border-b border-gray-700 flex flex-col gap-4 sticky top-[-1px] z-50 rounded-t-[2rem]">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <button onClick={() => { setCurrentSparePartView(null); setSparePartsSearch(''); }} className="mr-4 w-10 h-10 flex items-center justify-center bg-gray-700 rounded-lg text-indigo-400 hover:bg-gray-600 shadow-sm text-lg">←</button>
-                      <h3 className="font-black text-indigo-300 tracking-tight uppercase text-sm">Refacciones: {currentSparePartView}</h3>
+              <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn relative pb-4">
+                <div className="sticky top-0 z-50 bg-gray-900 rounded-t-[2rem] border-b border-gray-700 shadow-md">
+                  <div className="p-5 border-b border-gray-700 flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <button onClick={() => { setCurrentSparePartView(null); setSparePartsSearch(''); }} className="mr-4 w-10 h-10 flex items-center justify-center bg-gray-700 rounded-lg text-indigo-400 hover:bg-gray-600 shadow-sm text-lg">←</button>
+                        <h3 className="font-black text-indigo-300 tracking-tight uppercase text-sm">Refacciones: {currentSparePartView}</h3>
+                      </div>
                     </div>
+                    <input 
+                      type="text" 
+                      placeholder="Buscar refacción (ej. número de parte o descripción)..." 
+                      className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm" 
+                      value={sparePartsSearch} 
+                      onChange={e => setSparePartsSearch(e.target.value)} 
+                    />
                   </div>
-                  <input 
-                    type="text" 
-                    placeholder="Buscar refacción (ej. número de parte o descripción)..." 
-                    className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm" 
-                    value={sparePartsSearch} 
-                    onChange={e => setSparePartsSearch(e.target.value)} 
-                  />
+                  {sparePartsData[0] && (
+                    <div className="flex w-full px-2 text-[10px]">
+                      {Object.keys(sparePartsData[0]).map(k => {
+                        const key = k.toLowerCase();
+                        let width = "flex-1";
+                        if (key.includes('parte') || key.includes('no') || key.includes('cod')) width = "w-[90px] shrink-0";
+                        else if (typeof sparePartsData[0][k] === 'string' && sparePartsData[0][k].includes('drive.google.com')) width = "w-[80px] shrink-0 text-center";
+                        return (
+                          <div key={k} className={`p-3 font-black text-gray-400 uppercase tracking-tighter text-left ${width}`}>
+                            {k}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-                <div className="flex-1 p-2 min-h-[400px]">
-                  {loadingSpares ? <div className="text-center p-20 animate-pulse text-indigo-400 font-black">Cargando catálogo...</div> : (
-                    <table className="w-full text-[10px] text-left border-collapse table-fixed">
-                      <thead className="bg-gray-900 sticky top-[135px] z-40 shadow-md">
-                        <tr>
-                          {sparePartsData[0] && Object.keys(sparePartsData[0]).map(k => {
-                            const key = k.toLowerCase();
-                            let width = "";
-                            if (key.includes('parte') || key.includes('no') || key.includes('cod')) width = "w-[90px]";
-                            else if (sparePartsData[0][k]?.includes('drive.google.com')) width = "w-[80px]";
-                            return (
-                              <th key={k} className={`p-3 border-b border-gray-700 font-black text-gray-400 uppercase tracking-tighter bg-gray-900 ${width}`}>
-                                {k}
-                              </th>
-                            );
-                          })}
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-700">
-                        {filteredSpareParts.length > 0 ? filteredSpareParts.map((row) => (
-                          <tr key={row._id} className="hover:bg-gray-700 transition-colors">
-                            {Object.values(row).map((val, j) => (
-                              <td key={j} className="p-3 align-middle text-gray-200 whitespace-normal break-words leading-relaxed font-bold">
-                                {typeof val === 'string' && val.includes('drive.google.com') ? (
-                                  <div className="flex flex-col gap-2">
-                                    <div className="relative group w-16 h-16">
-                                      {(() => {
-                                        const idMatch = val.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                                        const driveId = idMatch ? idMatch[1] : null;
-                                        return driveId ? (
-                                          <img 
-                                            key={driveId}
-                                            src={`https://googleusercontent.com/profile/picture/6${driveId}=w400`} 
-                                            className="h-full w-full object-cover rounded-lg border border-gray-600 shadow-sm group-hover:scale-[2.5] group-hover:z-50 transition-transform cursor-pointer bg-gray-800" 
-                                            alt="Refacción"
-                                            onError={(e) => {
-                                              if (!e.target.dataset.triedBackup) {
-                                                e.target.dataset.triedBackup = "true";
-                                                e.target.src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w400`;
-                                              } else {
-                                                e.target.src = 'https://placehold.co/100x100?text=Error+Carga';
-                                              }
-                                            }}
-                                            onClick={() => window.open(val.match(/https:\/\/[^\s]+/)?.[0], '_blank')} 
-                                          />
-                                        ) : <span className="text-red-400">ID no encontrado</span>;
-                                      })()}
-                                    </div>
+                
+                <div className="flex-1 flex flex-col min-h-[400px] text-[10px] divide-y divide-gray-700 bg-gray-800 rounded-b-[2rem]">
+                  {loadingSpares ? (
+                    <div className="text-center p-20 animate-pulse text-indigo-400 font-black">Cargando catálogo...</div>
+                  ) : (
+                    filteredSpareParts.length > 0 ? filteredSpareParts.map((row) => (
+                      <div key={row._id} className="flex w-full px-2 hover:bg-gray-700 transition-colors">
+                        {Object.keys(sparePartsData[0]).map((k, j) => {
+                          const val = row[k] || '';
+                          const key = k.toLowerCase();
+                          let width = "flex-1";
+                          if (key.includes('parte') || key.includes('no') || key.includes('cod')) width = "w-[90px] shrink-0";
+                          else if (typeof sparePartsData[0][k] === 'string' && sparePartsData[0][k].includes('drive.google.com')) width = "w-[80px] shrink-0 justify-center";
+                          
+                          return (
+                            <div key={j} className={`p-3 flex items-center text-gray-200 break-words leading-relaxed font-bold ${width}`}>
+                              {typeof val === 'string' && val.includes('drive.google.com') ? (
+                                <div className="flex flex-col gap-2 w-full items-center">
+                                  <div className="relative group w-16 h-16">
+                                    {(() => {
+                                      const idMatch = val.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                                      const driveId = idMatch ? idMatch[1] : null;
+                                      return driveId ? (
+                                        <img 
+                                          key={driveId}
+                                          src={`https://googleusercontent.com/profile/picture/6${driveId}=w400`} 
+                                          className="h-full w-full object-cover rounded-lg border border-gray-600 shadow-sm group-hover:scale-[2.5] group-hover:z-50 transition-transform cursor-pointer bg-gray-800" 
+                                          alt="Refacción"
+                                          onError={(e) => {
+                                            if (!e.target.dataset.triedBackup) {
+                                              e.target.dataset.triedBackup = "true";
+                                              e.target.src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w400`;
+                                            } else {
+                                              e.target.src = 'https://placehold.co/100x100?text=Error+Carga';
+                                            }
+                                          }}
+                                          onClick={() => window.open(val.match(/https:\/\/[^\s]+/)?.[0], '_blank')} 
+                                        />
+                                      ) : <span className="text-red-400">ID no encontrado</span>;
+                                    })()}
                                   </div>
-                                ) : (
-                                  <span className="text-gray-200">{val}</span>
-                                )}
-                              </td>
-                            ))}
-                          </tr>
-                        )) : (
-                          <tr>
-                            <td colSpan={Object.keys(sparePartsData[0] || {}).length || 1} className="p-10 text-center font-bold text-indigo-400 uppercase tracking-widest text-xs">
-                              Sin resultados
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                                </div>
+                              ) : (
+                                <span className="text-gray-200">{val}</span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )) : (
+                      <div className="p-10 text-center font-bold text-indigo-400 uppercase tracking-widest text-xs">
+                        Sin resultados
+                      </div>
+                    )
                   )}
                 </div>
               </div>
