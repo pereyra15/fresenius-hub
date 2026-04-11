@@ -37,7 +37,8 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'fresenius-hub-v1';
 
-const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycby-qGJlQG_vxJMxqYKK0EBDkFJXLbLi7Gby7fCpej0ZnDgMpT0YsXELWwbvxOVsrTSkhg/exec"; 
+// URL Actualizada con la nueva implementación
+const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbz-uPHs1CcK9rYfFLhbAowobMB5iWcXVdUFYtRQ1Lw6xy7Y3Gcb2nVW502xqiKqiSH7Uw/exec"; 
 
 const mockEngineers = [
   'WS06 JORGE VELAZQUEZ', 'WS07 EDGAR NUÑO', 'WS09 ZAHIRA ISLAS',
@@ -71,6 +72,8 @@ const fallaMapping = [
   { key: 'Uso', code: 'FA45', desc: 'TCT-Mal Uso' },
   { key: 'Preventivo', code: 'FA46', desc: 'TCT-Preventivo' },
 ];
+
+// --- COMPONENTES UI ---
 
 const Input = ({ label, name, type = 'text', value, onChange, maxLength, inputMode, readOnly, placeholder, list }) => (
   <div className="mb-5 text-left">
@@ -137,6 +140,8 @@ const MaterialApoyoSVG = () => (
 const ContactosSVG = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
 );
+
+// --- PANTALLAS ---
 
 const LandingScreen = ({ setScreen }) => (
   <div className="flex flex-col gap-6 animate-fadeIn pb-10 mt-4">
@@ -286,6 +291,18 @@ const MenuScreen = ({
         engineerName: reportForm.ingeniero 
       });
 
+      let engineerEmail = "";
+      try {
+        const engQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'engineers'));
+        const engSnap = await getDocs(engQuery);
+        const engDoc = engSnap.docs.find(d => d.data().engineerName === reportForm.ingeniero);
+        if (engDoc) {
+          engineerEmail = engDoc.data().email;
+        }
+      } catch (e) {
+        console.warn("No se pudo obtener el email del ingeniero para la notificación:", e);
+      }
+
       if (GOOGLE_SHEETS_URL) {
         try {
           await fetch(GOOGLE_SHEETS_URL, { 
@@ -296,7 +313,8 @@ const MenuScreen = ({
                 ...reportForm, 
                 action: 'CREATE',      
                 firebaseId: docRef.id, 
-                ESTATUS: 'Abierto'     
+                ESTATUS: 'Abierto',
+                engineerEmail: engineerEmail 
             }) 
           });
         } catch (e) { console.error("Sheet Sync Failed:", e); }
@@ -311,7 +329,7 @@ const MenuScreen = ({
       };
       setSheetOrders(prev => [novaMendo, ...prev]);
 
-      setMessage("ORDEN GENERADA Y SINCRONIZADA.");
+      setMessage("ORDEN GENERADA Y NOTIFICADA.");
       setMenuSubScreen('dashboard');
     } catch (e) { setError("Fallo al guardar reporte: " + e.message); }
     finally { setLoadingReport(false); }
@@ -611,7 +629,7 @@ const MenuScreen = ({
                           const key = k.toLowerCase();
                           let width = "flex-1";
                           if (key.includes('parte') || key.includes('no') || key.includes('cod')) width = "w-[90px] shrink-0";
-                          else if (typeof sparePartsData[0][k] === 'string' && sparePartsData[0][k].includes('drive.google.com')) width = "w-[80px] shrink-0 justify-center";
+                          else if (typeof val === 'string' && val.includes('drive.google.com')) width = "w-[80px] shrink-0 justify-center";
                           
                           return (
                             <div key={j} className={`p-3 flex items-center text-gray-200 break-words leading-relaxed font-bold ${width}`}>
