@@ -203,6 +203,7 @@ const MenuScreen = ({
   
   const [sparePartsData, setSparePartsData] = useState([]);
   const [loadingSpares, setLoadingSpares] = useState(false);
+  const [zoomedImageId, setZoomedImageId] = useState(null);
   
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
   const [closingOrder, setClosingOrder] = useState(false);
@@ -618,7 +619,7 @@ const MenuScreen = ({
                                         <img 
                                           key={driveId}
                                           src={`https://googleusercontent.com/profile/picture/6${driveId}=w400`} 
-                                          className="h-full w-full object-cover rounded-lg border border-gray-600 shadow-sm group-hover:scale-[2.5] group-hover:z-50 transition-transform cursor-pointer bg-gray-800" 
+                                          className="h-full w-full object-cover rounded-lg border border-gray-600 shadow-sm group-hover:scale-[1.1] group-hover:z-50 transition-transform cursor-pointer bg-gray-800" 
                                           alt="Refacción"
                                           onError={(e) => {
                                             if (!e.target.dataset.triedBackup) {
@@ -628,7 +629,7 @@ const MenuScreen = ({
                                               e.target.src = 'https://placehold.co/100x100?text=Error+Carga';
                                             }
                                           }}
-                                          onClick={() => window.open(val.match(/https:\/\/[^\s]+/)?.[0], '_blank')} 
+                                          onClick={() => setZoomedImageId(driveId)} 
                                         />
                                       ) : <span className="text-red-400">ID no encontrado</span>;
                                     })()}
@@ -940,6 +941,28 @@ const MenuScreen = ({
 
       {showGenerateConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-green-400 uppercase">Confirmar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">La información se enviará a la nube.</p><div className="flex gap-4"><button onClick={() => setShowGenerateConfirm(false)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">CERRAR</button><button onClick={() => { setShowGenerateConfirm(false); submitReport(); }} className="flex-1 py-5 text-lg bg-green-600 text-white rounded-2xl font-black">ENVIAR</button></div></div></div>)}
       {contactToDelete && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-red-400 uppercase">Eliminar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Eliminar a <br/><span className="text-white">{contactToDelete.name}</span>?</p><div className="flex gap-4"><button onClick={() => setContactToDelete(null)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { deleteContact(contactToDelete.id); setContactToDelete(null); setMessage("CONTACTO ELIMINADO."); setTimeout(() => setMessage(""), 3000); }} className="flex-1 py-5 text-lg bg-red-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
+      
+      {zoomedImageId && (
+        <div 
+          className="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-[200] backdrop-blur-md transition-opacity"
+          onClick={() => setZoomedImageId(null)}
+        >
+          <div className="relative max-w-full max-h-full flex flex-col items-center justify-center animate-popIn" onClick={e => e.stopPropagation()}>
+            <button 
+              onClick={() => setZoomedImageId(null)} 
+              className="absolute -top-12 right-0 text-white bg-gray-700 hover:bg-gray-600 w-10 h-10 rounded-full flex items-center justify-center text-xl font-black shadow-lg active:scale-90 transition-all"
+            >
+              ✕
+            </button>
+            <img 
+              src={`https://drive.google.com/thumbnail?id=${zoomedImageId}&sz=w1000`} 
+              alt="Refacción Ampliada" 
+              className="max-w-[100vw] max-h-[80vh] object-contain rounded-2xl shadow-2xl border border-gray-700 bg-gray-900/50"
+              onError={(e) => { e.target.src = 'https://placehold.co/800x800?text=Imagen+No+Disponible'; }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
