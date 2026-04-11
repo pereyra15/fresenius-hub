@@ -37,7 +37,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'fresenius-hub-v1';
 
-// URL Actualizada con la nueva implementación
+// Confirmación de la URL de la implementación de Google Apps Script
 const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbz-uPHs1CcK9rYfFLhbAowobMB5iWcXVdUFYtRQ1Lw6xy7Y3Gcb2nVW502xqiKqiSH7Uw/exec"; 
 
 const mockEngineers = [
@@ -968,7 +968,7 @@ const MenuScreen = ({
       
       {selectedContact && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm" onClick={() => setSelectedContact(null)}>
-          <div className="bg-gray-800 p-8 rounded-[2.5rem] w-full max-w-sm text-left shadow-2xl animate-popIn border border-gray-700" onClick={e => e.stopPropagation()}>
+          <div className="bg-gray-800 p-8 rounded-[2.5rem] w-full max-sm text-left shadow-2xl animate-popIn border border-gray-700" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
               <h3 className="font-black text-xl uppercase text-purple-400 tracking-tight">Detalles de Contacto</h3>
               <button onClick={() => setSelectedContact(null)} className="text-gray-400 hover:text-white text-2xl active:scale-90 transition-transform">✕</button>
