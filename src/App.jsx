@@ -854,7 +854,7 @@ const MenuScreen = ({
       </div>
       
       {/* Añadida la referencia contentScrollRef aquí para manejar el reset del scroll */}
-      <div ref={contentScrollRef} className="flex-1 overflow-y-auto scroll-smooth pb-10">
+      <div ref={contentScrollRef} className="flex-1 overflow-y-auto scroll-smooth pb-10 overscroll-none">
         {menuSubScreen === 'dashboard' ? (
           <div className="grid gap-6 animate-fadeIn">
             <MenuButton label="Inventario" subScreenId="equipos" svgIcon={<EquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} />
@@ -1170,8 +1170,8 @@ export default function App() {
   if (loading) return (<div className="h-screen flex flex-col items-center justify-center bg-gray-900 text-blue-400 font-black gap-4"><div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div><div className="animate-pulse tracking-widest text-xs font-black">Fresenius Hub...</div></div>);
 
   return (
-    <div className="min-h-[100dvh] bg-gray-900 md:p-4 flex items-center justify-center font-sans overflow-hidden">
-      <div className="w-full h-[100dvh] md:h-auto md:min-h-[850px] md:max-h-[95vh] max-w-[480px] bg-gray-800 p-6 md:p-8 md:rounded-[3rem] md:border-8 border-gray-700 relative flex flex-col md:shadow-2xl">
+    <div className="min-h-[100dvh] bg-gray-900 md:p-4 flex items-center justify-center font-sans overflow-hidden overscroll-none">
+      <div className="w-full h-[100dvh] md:h-auto md:min-h-[850px] md:max-h-[95vh] max-w-[480px] bg-gray-800 p-6 md:p-8 md:rounded-[3rem] md:border-8 border-gray-700 relative flex flex-col md:shadow-2xl overscroll-none">
         <div className="absolute top-8 left-0 right-0 px-8 z-50 pointer-events-none text-center">
           {error && <div className="bg-red-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{error}</div>}
           {message && screen !== 'menu' && <div className="bg-green-500 text-white p-4 text-xs rounded-2xl mb-2 font-black shadow-lg animate-popIn uppercase tracking-widest">{message}</div>}
@@ -1194,6 +1194,13 @@ export default function App() {
         <div className="mt-4 pt-4 border-t border-gray-700 text-center flex justify-center items-center gap-2"><div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div><p className="text-[9px] font-black text-gray-500 tracking-[0.4em] uppercase">FRESENIUS KABI • Engineering Hub</p></div>
       </div>
       <style>{`
+        /* Bloqueo de pull-to-refresh en navegadores móviles */
+        html, body { 
+          overscroll-behavior-y: none; 
+          height: 100%; 
+          overflow: hidden; 
+        }
+        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideDown { from { max-height: 0; opacity: 0; } to { max-height: 1000px; opacity: 1; } }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -1203,7 +1210,12 @@ export default function App() {
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
         input:focus, textarea:focus { scroll-margin-bottom: 20px; }
-        * { scrollbar-color: #4b5563 transparent; }
+        * { 
+          scrollbar-color: #4b5563 transparent; 
+          -webkit-tap-highlight-color: transparent;
+        }
+        
+        .overscroll-none { overscroll-behavior: none; }
       `}</style>
     </div>
   );
