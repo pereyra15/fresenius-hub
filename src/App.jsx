@@ -505,12 +505,15 @@ const MenuScreen = ({
         );
 
       case 'contactos':
-        const filteredContacts = contacts.filter(c => {
-          const term = contactSearch.toLowerCase();
-          return (c.name || '').toLowerCase().includes(term) ||
-                 (c.client || '').toLowerCase().includes(term) ||
-                 (c.phone || '').toLowerCase().includes(term);
-        });
+        // Se aplica un .sort() al final para mantener el orden alfabético por nombre
+        const filteredContacts = contacts
+          .filter(c => {
+            const term = contactSearch.toLowerCase();
+            return (c.name || '').toLowerCase().includes(term) ||
+                   (c.client || '').toLowerCase().includes(term) ||
+                   (c.phone || '').toLowerCase().includes(term);
+          })
+          .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
         return (
           <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn relative">
@@ -678,15 +681,15 @@ const MenuScreen = ({
           }
           return (
             <div className="p-6 bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20">
-               <button onClick={() => setDocumentationSubScreen(null)} className="mb-8 flex items-center gap-3 text-indigo-400 font-black uppercase text-xs tracking-widest hover:text-indigo-300"><span className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-lg">←</span> Volver</button>
-               <div className="grid gap-5">
-                 <button onClick={() => fetchSpareParts('https://docs.google.com/spreadsheets/d/e/2PACX-1vS86FFjvfk8XJXF0bqgcyzAhADOQbtLDFH7JwFcFvqWxJHZugcqxGPky63hB65KJXRfChRXK_kapw3x/pub?gid=1919791847&single=true&output=csv', 'COMPOGUARD')} className="p-8 bg-gray-700 border-2 border-gray-600 rounded-[2rem] font-black text-indigo-300 hover:bg-gray-600 transition-all flex flex-col items-center gap-3 shadow-sm text-lg">
-                   <span className="text-4xl">⚖️</span> COMPOGUARD
-                 </button>
-                 <button onClick={() => fetchSpareParts('https://docs.google.com/spreadsheets/d/e/2PACX-1vS86FFjvfk8XJXF0bqgcyzAhADOQbtLDFH7JwFcFvqWxJHZugcqxGPky63hB65KJXRfChRXK_kapw3x/pub?gid=1546674811&single=true&output=csv', 'COMPOMAT G5')} className="p-8 bg-gray-700 border-2 border-gray-600 rounded-[2rem] font-black text-indigo-300 hover:bg-gray-600 transition-all flex flex-col items-center gap-3 shadow-sm text-lg">
-                   <span className="text-4xl">🗜️</span> COMPOMAT G5
-                 </button>
-               </div>
+                <button onClick={() => setDocumentationSubScreen(null)} className="mb-8 flex items-center gap-3 text-indigo-400 font-black uppercase text-xs tracking-widest hover:text-indigo-300"><span className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center text-lg">←</span> Volver</button>
+                <div className="grid gap-5">
+                  <button onClick={() => fetchSpareParts('https://docs.google.com/spreadsheets/d/e/2PACX-1vS86FFjvfk8XJXF0bqgcyzAhADOQbtLDFH7JwFcFvqWxJHZugcqxGPky63hB65KJXRfChRXK_kapw3x/pub?gid=1919791847&single=true&output=csv', 'COMPOGUARD')} className="p-8 bg-gray-700 border-2 border-gray-600 rounded-[2rem] font-black text-indigo-300 hover:bg-gray-600 transition-all flex flex-col items-center gap-3 shadow-sm text-lg">
+                    <span className="text-4xl">⚖️</span> COMPOGUARD
+                  </button>
+                  <button onClick={() => fetchSpareParts('https://docs.google.com/spreadsheets/d/e/2PACX-1vS86FFjvfk8XJXF0bqgcyzAhADOQbtLDFH7JwFcFvqWxJHZugcqxGPky63hB65KJXRfChRXK_kapw3x/pub?gid=1546674811&single=true&output=csv', 'COMPOMAT G5')} className="p-8 bg-gray-700 border-2 border-gray-600 rounded-[2rem] font-black text-indigo-300 hover:bg-gray-600 transition-all flex flex-col items-center gap-3 shadow-sm text-lg">
+                    <span className="text-4xl">🗜️</span> COMPOMAT G5
+                  </button>
+                </div>
             </div>
           );
         }
