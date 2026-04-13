@@ -37,7 +37,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'fresenius-hub-v1';
 
-// Confirmación de la URL de la implementación de Google Apps Script
 const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbz-uPHs1CcK9rYfFLhbAowobMB5iWcXVdUFYtRQ1Lw6xy7Y3Gcb2nVW502xqiKqiSH7Uw/exec"; 
 
 const mockEngineers = [
@@ -75,13 +74,14 @@ const fallaMapping = [
 
 // --- COMPONENTES UI ---
 
-const Input = ({ label, name, type = 'text', value, onChange, maxLength, inputMode, readOnly, placeholder, list }) => (
-  <div className="mb-5 text-left">
+const Input = ({ label, name, type = 'text', value, onChange, maxLength, inputMode, readOnly, placeholder, onFocus, onBlur }) => (
+  <div className="mb-5 text-left relative">
     <label className="block text-gray-300 text-xs font-black mb-1.5 uppercase tracking-wider">{label}</label>
     <input
       className={`w-full p-4 border rounded-2xl text-base transition-all focus:ring-2 focus:ring-blue-500 outline-none shadow-sm ${readOnly ? 'bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed' : 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'}`}
       type={type} name={name} value={value} onChange={onChange} maxLength={maxLength} 
-      inputMode={inputMode} readOnly={readOnly} placeholder={placeholder} list={list}
+      inputMode={inputMode} readOnly={readOnly} placeholder={placeholder}
+      onFocus={onFocus} onBlur={onBlur} autoComplete="off"
     />
   </div>
 );
@@ -214,6 +214,10 @@ const MenuScreen = ({
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
   const [closingOrder, setClosingOrder] = useState(false);
 
+  // Estados para el buscador personalizado de contactos (Solución para iPhone)
+  const [showContactSuggestions, setShowContactSuggestions] = useState(false);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+
   const [reportForm, setReportForm] = useState({
     tipoOS: '', serie: '', modelo: '', descripcionEquipo: '', fechaSolicitud: new Date().toISOString().split('T')[0],
     ano: new Date().getFullYear().toString(), cliente: '', ingeniero: loginForm.engineerName || '',
@@ -254,6 +258,7 @@ const MenuScreen = ({
     const { name, value } = e.target;
     setReportForm(prev => {
       const newState = { ...prev, [name]: value };
+      
       if (name === 'serie') {
         const found = equipment.find(eq => eq.serie === value);
         if (found) { 
@@ -262,11 +267,23 @@ const MenuScreen = ({
           newState.cliente = found.cliente; 
         }
       }
+
+      // Buscador personalizado para que iPhone encuentre por Hospital también
       if (name === 'reporta') {
-        newState.contacto = value;
-        const matched = contacts.find(c => c.name === value);
-        if (matched) { newState.telefono = matched.phone || ''; newState.email = matched.email || ''; }
+        const val = value.toLowerCase();
+        if (val.length > 0) {
+          const matched = contacts.filter(c => 
+            (c.name || '').toLowerCase().includes(val) || 
+            (c.client || '').toLowerCase().includes(val)
+          ).sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+          
+          setFilteredSuggestions(matched);
+          setShowContactSuggestions(true);
+        } else {
+          setShowContactSuggestions(false);
+        }
       }
+
       if (name === 'falla') {
         const text = value.toLowerCase();
         const match = fallaMapping.find(item => text.includes(item.key.toLowerCase()));
@@ -275,6 +292,17 @@ const MenuScreen = ({
       }
       return newState;
     });
+  };
+
+  const selectContactSuggestion = (contact) => {
+    setReportForm(prev => ({
+      ...prev,
+      reporta: contact.name,
+      contacto: contact.name,
+      telefono: contact.phone || '',
+      email: contact.email || ''
+    }));
+    setShowContactSuggestions(false);
   };
 
   const submitReport = async () => {
@@ -481,7 +509,6 @@ const MenuScreen = ({
         return (
           <div className="p-6 bg-gray-800 border border-gray-700 rounded-[2rem] overflow-y-auto animate-fadeIn text-left shadow-sm pb-20">
             <h3 className="text-3xl font-black mb-8 text-white tracking-tighter border-b border-gray-700 pb-4 uppercase">Nueva Orden</h3>
-            <datalist id="contactos-agenda">{contacts.map(c => <option key={c.id} value={c.name}>{c.client}</option>)}</datalist>
             
             {isSupervisor ? (
               <Select label="Ingeniero Asignado *" name="ingeniero" value={reportForm.ingeniero} onChange={handleReportChange} options={mockEngineers} />
@@ -496,7 +523,33 @@ const MenuScreen = ({
             <Input label="Hospital" name="cliente" value={reportForm.cliente} onChange={handleReportChange} readOnly />
             <Select label="Área" name="area" value={reportForm.area} onChange={handleReportChange} options={['Recolección', 'Fraccionamiento', 'Aféresis']} />
             <TextArea label="Falla Reportada" name="falla" value={reportForm.falla} onChange={handleReportChange} />
-            <Input label="Reporta" name="reporta" value={reportForm.reporta} onChange={handleReportChange} list="contactos-agenda" />
+            
+            {/* Buscador personalizado (Solución para Multiplataforma / iPhone) */}
+            <div className="relative">
+              <Input 
+                label="Reporta" 
+                name="reporta" 
+                value={reportForm.reporta} 
+                onChange={handleReportChange} 
+                onFocus={() => { if(reportForm.reporta.length > 0) setShowContactSuggestions(true); }}
+                placeholder="Busca por nombre u hospital..." 
+              />
+              {showContactSuggestions && filteredSuggestions.length > 0 && (
+                <div className="absolute z-[110] top-[85px] left-0 right-0 bg-gray-700 border border-gray-600 rounded-2xl shadow-2xl max-h-[220px] overflow-y-auto animate-fadeIn">
+                  {filteredSuggestions.map((c, idx) => (
+                    <div 
+                      key={c.id || idx} 
+                      onMouseDown={() => selectContactSuggestion(c)}
+                      className="p-4 border-b border-gray-600 last:border-0 hover:bg-blue-600 cursor-pointer active:bg-blue-700 transition-colors"
+                    >
+                      <p className="font-black text-white text-sm uppercase leading-tight">{c.name}</p>
+                      <p className="text-[10px] text-blue-300 font-bold uppercase mt-1 tracking-tighter">{c.client}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <Input label="Teléfono" name="telefono" value={reportForm.telefono} onChange={handleReportChange} />
             <Input label="Correo Electrónico" name="email" type="email" value={reportForm.email} onChange={handleReportChange} placeholder="correo@ejemplo.com" />
             <TextArea label="Observaciones" name="observaciones" value={reportForm.observaciones} onChange={handleReportChange} rows={2} />
@@ -505,7 +558,6 @@ const MenuScreen = ({
         );
 
       case 'contactos':
-        // Se aplica un .sort() al final para mantener el orden alfabético por nombre
         const filteredContacts = contacts
           .filter(c => {
             const term = contactSearch.toLowerCase();
@@ -886,7 +938,7 @@ const MenuScreen = ({
   };
 
   return (
-    <div className="w-full relative h-full flex flex-col">
+    <div className="w-full relative h-full flex flex-col" onClick={() => setShowContactSuggestions(false)}>
       <div className="flex justify-between items-center mb-8 border-b-2 border-gray-700 pb-5">
         {menuSubScreen === 'dashboard' ? (
           <div className="flex flex-col text-left"><span className="text-[11px] font-black text-blue-400 uppercase tracking-[0.3em]">Bienvenido</span><h2 className="font-black text-white tracking-tighter uppercase text-3xl leading-none mt-1">Ing. {loginForm.engineerName.split(' ')[2] || loginForm.engineerName.split(' ')[1]}</h2></div>
@@ -915,10 +967,10 @@ const MenuScreen = ({
         ) : renderContent()}
       </div>
       
-      {showResetOSConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 uppercase text-white">Nueva Orden</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Deseas vaciar los campos?</p><div className="flex flex-col gap-4"><button onClick={() => { resetOSForm(); setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-blue-600 text-white rounded-2xl font-black">LIMPIAR</button><button onClick={() => { setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-gray-700 text-gray-300 rounded-2xl font-black">MANTENER</button></div></div></div>)}
+      {showResetOSConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm" onClick={e => e.stopPropagation()}><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 uppercase text-white">Nueva Orden</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Deseas vaciar los campos?</p><div className="flex flex-col gap-4"><button onClick={() => { resetOSForm(); setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-blue-600 text-white rounded-2xl font-black">LIMPIAR</button><button onClick={() => { setShowResetOSConfirm(false); setMenuSubScreen('generarOS'); }} className="w-full py-5 text-lg bg-gray-700 text-gray-300 rounded-2xl font-black">MANTENER</button></div></div></div>)}
       
       {selectedEquipment && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm" onClick={e => e.stopPropagation()}>
           <div className="bg-gray-800 p-8 rounded-[2.5rem] w-full max-w-sm text-left shadow-2xl animate-popIn border border-gray-700">
             <div className="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
               <h3 className="font-black text-xl uppercase text-white tracking-tight">Detalles del Equipo</h3>
@@ -966,8 +1018,8 @@ const MenuScreen = ({
         </div>
       )}
 
-      {showGenerateConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-green-400 uppercase">Confirmar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">La información se enviará a la nube.</p><div className="flex gap-4"><button onClick={() => setShowGenerateConfirm(false)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">CERRAR</button><button onClick={() => { setShowGenerateConfirm(false); submitReport(); }} className="flex-1 py-5 text-lg bg-green-600 text-white rounded-2xl font-black">ENVIAR</button></div></div></div>)}
-      {contactToDelete && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm"><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-red-400 uppercase">Eliminar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Eliminar a <br/><span className="text-white">{contactToDelete.name}</span>?</p><div className="flex gap-4"><button onClick={() => setContactToDelete(null)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { deleteContact(contactToDelete.id); setContactToDelete(null); setMessage("CONTACTO ELIMINADO."); setTimeout(() => setMessage(""), 3000); }} className="flex-1 py-5 text-lg bg-red-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
+      {showGenerateConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm" onClick={e => e.stopPropagation()}><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-green-400 uppercase">Confirmar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">La información se enviará a la nube.</p><div className="flex gap-4"><button onClick={() => setShowGenerateConfirm(false)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">CERRAR</button><button onClick={() => { setShowGenerateConfirm(false); submitReport(); }} className="flex-1 py-5 text-lg bg-green-600 text-white rounded-2xl font-black">ENVIAR</button></div></div></div>)}
+      {contactToDelete && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm" onClick={e => e.stopPropagation()}><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-red-400 uppercase">Eliminar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Eliminar a <br/><span className="text-white">{contactToDelete.name}</span>?</p><div className="flex gap-4"><button onClick={() => setContactToDelete(null)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { deleteContact(contactToDelete.id); setContactToDelete(null); setMessage("CONTACTO ELIMINADO."); setTimeout(() => setMessage(""), 3000); }} className="flex-1 py-5 text-lg bg-red-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
       
       {selectedContact && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm" onClick={() => setSelectedContact(null)}>
@@ -1074,7 +1126,7 @@ export default function App() {
     link.href = iconUrl;
 
     let appleLink = document.querySelector("link[rel='apple-touch-icon']");
-    if (!appleLink) { appleLink = document.createElement('link'); appleLink.rel = 'apple-touch-icon'; document.head.appendChild(appleLink); }
+    if (!appleLink) { appleLink = document.createElement('link'); appleLink.rel = 'apple-touch-icon'; appleLink.href = iconUrl; document.head.appendChild(appleLink); }
     appleLink.href = iconUrl;
 
     const manifest = {
