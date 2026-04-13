@@ -40,9 +40,9 @@ const appId = typeof __app_id !== 'undefined' ? __app_id : 'fresenius-hub-v1';
 const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbz-uPHs1CcK9rYfFLhbAowobMB5iWcXVdUFYtRQ1Lw6xy7Y3Gcb2nVW502xqiKqiSH7Uw/exec"; 
 
 const mockEngineers = [
-  'WS06 JORGE VELAZQUEZ', 'WS07 EDGAR NUÑO', 'WS09 ZAHIRA ISLAS',
-  'WS10 JUAN CARLOS SAAVEDRA', 'WS11 JORGE DIAZ', 'WS12 HIRAM ALVAREZ', 'WS15 VICTOR ENRIQUEZ',
-  'WSMG DELFINO MUÑOZ', 'WSPL CARLOS LUIS'
+  'WS06-JORGE VELAZQUEZ', 'WS07-EDGAR NUÑO', 'WS09-ZAHIRA ISLAS',
+  'WS10-JUAN SAAVEDRA', 'WS11-JORGE DIAZ', 'WS12-HIRAM ALVAREZ', 'WS15 VICTOR ENRIQUEZ',
+  'WSMG-DELFINO MUÑOZ', 'WSPL-CARLOS LUIS'
 ];
 
 const fallaMapping = [
@@ -516,7 +516,7 @@ const MenuScreen = ({
               <Input label="Ingeniero Asignado" name="ingeniero" value={reportForm.ingeniero} readOnly />
             )}
 
-            <Select label="Tipo de Servicio" name="tipoOS" value={reportForm.tipoOS} onChange={handleReportChange} options={['ZMXC (MTTO CORRECTIVO)', 'ZMXP (MTTO PREVENTIVO)', 'ZMXI (INSTALACIÓN)', 'ZMXA (ASESORÍA)']} />
+            <Select label="Tipo de Servicio" name="tipoOS" value={reportForm.tipoOS} onChange={handleReportChange} options={['ZMXC', 'ZMXP', 'ZMXI', 'ZMXA']} />
             <Input label="Serie / SN" name="serie" value={reportForm.serie} onChange={handleReportChange} />
             <Input label="Modelo" name="modelo" value={reportForm.modelo} onChange={handleReportChange} readOnly />
             <Input label="Descripción del Equipo" name="descripcionEquipo" value={reportForm.descripcionEquipo} onChange={handleReportChange} readOnly />
