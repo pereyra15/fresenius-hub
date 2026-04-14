@@ -192,7 +192,7 @@ const MenuScreen = ({
   contacts, addContact, deleteContact, serviceOrders, sheetOrders, setSheetOrders, equipment,
   documentationSubScreen, setDocumentationSubScreen, currentSparePartView, setCurrentSparePartView
 }) => {
-  const isSupervisor = ['WSMG DELFINO MUÑOZ', 'WSPL CARLOS LUIS'].includes(loginForm.engineerName);
+  const isSupervisor = ['WSMG-DELFINO MUÑOZ', 'WSPL-CARLOS LUIS'].includes(loginForm.engineerName);
   const contentScrollRef = useRef(null);
 
   const [searchTerm, setSearchTerm] = useState('');
