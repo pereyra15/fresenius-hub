@@ -35,8 +35,9 @@ const firebaseConfig = typeof __firebase_config !== 'undefined'
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-// Actualizado appId para forzar actualización de contexto en dispositivos
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'fresenius-hub-v1-1';
+
+// REVERTIDO: Se regresa al ID original para recuperar los datos existentes (Agenda e Ingenieros)
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'fresenius-hub-v1';
 
 const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbz-uPHs1CcK9rYfFLhbAowobMB5iWcXVdUFYtRQ1Lw6xy7Y3Gcb2nVW502xqiKqiSH7Uw/exec"; 
 
@@ -324,7 +325,11 @@ const MenuScreen = ({
       try {
         const engQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'engineers'));
         const engSnap = await getDocs(engQuery);
-        const engDoc = engSnap.docs.find(d => d.data().engineerName === reportForm.ingeniero);
+        const engDoc = engSnap.docs.find(d => {
+          const dbName = (d.data().engineerName || '').replace(/[\s-]/g, '');
+          const inputName = reportForm.ingeniero.replace(/[\s-]/g, '');
+          return dbName === inputName;
+        });
         if (engDoc) {
           engineerEmail = engDoc.data().email;
         }
@@ -451,7 +456,6 @@ const MenuScreen = ({
         const filtered = equipment.filter(item => {
           const eng = (loginForm.engineerName || '').toLowerCase().replace(/[\s-]/g, '');
           const resp = (item.responsable || '').toLowerCase().replace(/[\s-]/g, '');
-          // Comparación flexible (ignora espacios y guiones) para evitar fallos de cache
           const matchEng = isSupervisor ? true : (eng.includes(resp) || resp.includes(eng));
           const matchTerm = (item.serie + (item.modelo || '') + (item.descripcion || '') + (item.cliente || '')).toLowerCase().includes(searchTerm.toLowerCase());
           return matchEng && matchTerm;
@@ -499,8 +503,16 @@ const MenuScreen = ({
             <div className="bg-gray-800 p-6 rounded-3xl border border-gray-700 mb-2">
               <h4 className="font-black text-blue-300 text-sm uppercase tracking-widest mb-2">Métricas Rápidas</h4>
               <div className="flex gap-4">
-                <div className="flex-1"><span className="block text-3xl font-black text-white">{sheetOrders.filter(so => so.engineerName === loginForm.engineerName && so.status && so.status.toLowerCase().includes('abierto')).length}</span><span className="text-[10px] font-black text-blue-400 uppercase">Abiertas</span></div>
-                <div className="flex-1"><span className="block text-3xl font-black text-green-400">{sheetOrders.filter(so => so.engineerName === loginForm.engineerName && so.status && so.status.toLowerCase().includes('cerrado')).length}</span><span className="text-[10px] font-black text-green-500 uppercase">Cerradas</span></div>
+                <div className="flex-1"><span className="block text-3xl font-black text-white">{sheetOrders.filter(so => {
+                  const eng = (loginForm.engineerName || '').toLowerCase().replace(/[\s-]/g, '');
+                  const orderEng = (so.engineerName || '').toLowerCase().replace(/[\s-]/g, '');
+                  return eng === orderEng && so.status && so.status.toLowerCase().includes('abierto');
+                }).length}</span><span className="text-[10px] font-black text-blue-400 uppercase">Abiertas</span></div>
+                <div className="flex-1"><span className="block text-3xl font-black text-green-400">{sheetOrders.filter(so => {
+                  const eng = (loginForm.engineerName || '').toLowerCase().replace(/[\s-]/g, '');
+                  const orderEng = (so.engineerName || '').toLowerCase().replace(/[\s-]/g, '');
+                  return eng === orderEng && so.status && so.status.toLowerCase().includes('cerrado');
+                }).length}</span><span className="text-[10px] font-black text-green-500 uppercase">Cerradas</span></div>
               </div>
             </div>
             <button onClick={() => setMenuSubScreen('ordenesAsignadas')} className="p-10 bg-gray-800 border-2 border-gray-700 rounded-[2.5rem] font-black text-white text-xl shadow-xl flex flex-col items-center gap-3 active:scale-95 transition-all"><span className="text-6xl">📋</span> MIS ÓRDENES</button>
@@ -808,7 +820,6 @@ const MenuScreen = ({
 
       case 'ordenesAsignadas':
         const myOrders = sheetOrders.filter(so => {
-          // Normalización para filtrar órdenes incluso si el nombre en Sheets aún tiene espacios
           const eng = (loginForm.engineerName || '').toLowerCase().replace(/[\s-]/g, '');
           const orderEng = (so.engineerName || '').toLowerCase().replace(/[\s-]/g, '');
           return eng === orderEng;
@@ -1333,9 +1344,6 @@ export default function App() {
       });
 
       if (!found) { setError("PIN INCORRECTO."); setLoading(false); return; }
-      
-      // Actualizamos automáticamente el nombre local al formato correcto del mock (con guion)
-      setLoginForm(prev => ({ ...prev, engineerName: loginForm.engineerName }));
       
       setError(''); navigate('menu');
     } catch (e) { setError("ERROR FIREBASE: " + e.message); } finally { setLoading(false); }
