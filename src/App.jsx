@@ -36,7 +36,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// REVERTIDO: Se regresa al ID original para recuperar los datos existentes (Agenda e Ingenieros)
+// Se mantiene el ID original para recuperar datos existentes
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'fresenius-hub-v1';
 
 const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbz-uPHs1CcK9rYfFLhbAowobMB5iWcXVdUFYtRQ1Lw6xy7Y3Gcb2nVW502xqiKqiSH7Uw/exec"; 
@@ -277,7 +277,7 @@ const MenuScreen = ({
           const matched = contacts.filter(c => 
             (c.name || '').toLowerCase().includes(val) || 
             (c.client || '').toLowerCase().includes(val)
-          ).sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+          ).sort((a,b) => (a.name || '').trim().localeCompare((b.name || '').trim(), 'es', { sensitivity: 'base' }));
           
           setFilteredSuggestions(matched);
           setShowContactSuggestions(true);
@@ -414,7 +414,6 @@ const MenuScreen = ({
     setCurrentSparePartView(viewName);
     setSparePartsSearch('');
     try {
-      // Añadido timestamp para evitar cache en fetch
       const response = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`);
       const text = await response.text();
       const rows = text.split('\n');
@@ -572,6 +571,7 @@ const MenuScreen = ({
         );
 
       case 'contactos':
+        // MEJORA: Ordenamiento alfabético ignorando espacios al inicio y mayúsculas/acentos
         const filteredContacts = contacts
           .filter(c => {
             const term = contactSearch.toLowerCase();
@@ -579,7 +579,7 @@ const MenuScreen = ({
                    (c.client || '').toLowerCase().includes(term) ||
                    (c.phone || '').toLowerCase().includes(term);
           })
-          .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+          .sort((a, b) => (a.name || '').trim().localeCompare((b.name || '').trim(), 'es', { sensitivity: 'base' }));
 
         return (
           <div className="flex flex-col bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn relative">
@@ -1250,7 +1250,6 @@ export default function App() {
   useEffect(() => {
     const fetchEquipment = async () => {
       try {
-        // Cache busting añadido
         const resp = await fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vS86FFjvfk8XJXF0bqgcyzAhADOQbtLDFH7JwFcFvqWxJHZugcqxGPky63hB65KJXRfChRXK_kapw3x/pub?gid=0&single=true&output=csv&t=${Date.now()}`);
         const text = await resp.text();
         const rows = text.split('\n');
@@ -1279,7 +1278,6 @@ export default function App() {
   useEffect(() => {
     const fetchSheetOrders = async () => {
       try {
-        // Cache busting añadido
         const resp = await fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRqMsPTihy-C9WpValwIav8qpZMi7r710R3M3cOPakcgQ2kEhMJVl1Mw4UlKSt8yB6J2EP_wU5tcm3A/pub?gid=0&single=true&output=csv&t=${Date.now()}`);
         const text = await resp.text();
         const rows = text.split('\n');
@@ -1336,7 +1334,6 @@ export default function App() {
       const q = collection(db, 'artifacts', appId, 'public', 'data', 'engineers');
       const s = await getDocs(q);
       
-      // Búsqueda flexible para ingenieros antiguos registrados con espacio
       const found = s.docs.find(d => {
         const dbName = (d.data().engineerName || '').replace(/[\s-]/g, '');
         const inputName = loginForm.engineerName.replace(/[\s-]/g, '');
