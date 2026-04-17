@@ -426,7 +426,13 @@ const MenuScreen = ({
         Object.defineProperty(obj, '_id', { value: idx, enumerable: false });
         return obj;
       });
-      setSparePartsData(data);
+      // ORDENAMIENTO: Ordenar repuestos por descripción (usualmente la segunda columna)
+      const sortedData = data.sort((a,b) => {
+        const keyA = String(Object.values(a)[1] || '').trim();
+        const keyB = String(Object.values(b)[1] || '').trim();
+        return keyA.localeCompare(keyB, 'es', { sensitivity: 'base', numeric: true });
+      });
+      setSparePartsData(sortedData);
     } catch (e) { setError("Fallo en sincronización de repuestos."); }
     finally { setLoadingSpares(false); }
   };
@@ -452,13 +458,25 @@ const MenuScreen = ({
   const renderContent = () => {
     switch (menuSubScreen) {
       case 'equipos':
+        // ORDENAMIENTO: Lista de equipos por HOSPITAL (cliente) alfabéticamente
+        // Si el hospital es el mismo, se ordena por Serie como criterio secundario.
         const filtered = equipment.filter(item => {
           const eng = (loginForm.engineerName || '').toLowerCase().replace(/[\s-]/g, '');
           const resp = (item.responsable || '').toLowerCase().replace(/[\s-]/g, '');
           const matchEng = isSupervisor ? true : (eng.includes(resp) || resp.includes(eng));
           const matchTerm = (item.serie + (item.modelo || '') + (item.descripcion || '') + (item.cliente || '')).toLowerCase().includes(searchTerm.toLowerCase());
           return matchEng && matchTerm;
+        }).sort((a, b) => {
+          const hospitalA = (a.cliente || '').trim();
+          const hospitalB = (b.cliente || '').trim();
+          const hospitalComp = hospitalA.localeCompare(hospitalB, 'es', { sensitivity: 'base' });
+          
+          if (hospitalComp !== 0) return hospitalComp;
+          
+          // Orden secundario por Serie si el hospital es el mismo
+          return (a.serie || '').trim().localeCompare((b.serie || '').trim(), 'es', { sensitivity: 'base', numeric: true });
         });
+
         return (
           <div className="bg-gray-800 rounded-[2rem] shadow-sm border border-gray-700 flex flex-col animate-fadeIn relative">
             <div className="sticky top-0 z-50 bg-gray-900 rounded-t-[2rem] border-b border-gray-700 shadow-md">
@@ -467,7 +485,7 @@ const MenuScreen = ({
               </div>
               <div className="flex px-2 font-black text-gray-400 text-[10px] uppercase tracking-wider">
                 <div className="py-4 px-2 w-[110px] shrink-0 text-left">SERIE</div>
-                <div className="py-4 px-2 flex-1 text-left">EQUIPO</div>
+                <div className="py-4 px-2 flex-1 text-left">EQUIPO / HOSPITAL</div>
                 <div className="py-4 px-2 w-12 shrink-0 text-center">ST</div>
               </div>
             </div>
@@ -481,7 +499,7 @@ const MenuScreen = ({
                     <div className="font-black text-white uppercase text-[10px] truncate leading-tight">
                       {item.descripcion || 'SIN DESCRIPCIÓN'}
                     </div>
-                    <div className="text-[9px] text-gray-400 uppercase tracking-tighter truncate mt-0.5">
+                    <div className="text-[9px] text-blue-300 font-black uppercase tracking-tighter truncate mt-0.5">
                       {item.cliente}
                     </div>
                   </div>
@@ -571,7 +589,6 @@ const MenuScreen = ({
         );
 
       case 'contactos':
-        // MEJORA: Ordenamiento alfabético ignorando espacios al inicio y mayúsculas/acentos
         const filteredContacts = contacts
           .filter(c => {
             const term = contactSearch.toLowerCase();
@@ -1314,7 +1331,7 @@ export default function App() {
           return obj;
         });
         setSheetOrders(data);
-      } catch (e) { console.error("Error al obtener órdenes de Sheets", e); }
+      } catch (errorSync) { console.error("Error al obtener órdenes de Sheets", errorSync); }
     };
     if (user) { fetchSheetOrders(); }
   }, [user]);
