@@ -35,7 +35,8 @@ const firebaseConfig = typeof __firebase_config !== 'undefined'
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'fresenius-hub-v1';
+// Actualizado appId para forzar actualización de contexto en dispositivos
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'fresenius-hub-v1-1';
 
 const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbz-uPHs1CcK9rYfFLhbAowobMB5iWcXVdUFYtRQ1Lw6xy7Y3Gcb2nVW502xqiKqiSH7Uw/exec"; 
 
@@ -408,7 +409,8 @@ const MenuScreen = ({
     setCurrentSparePartView(viewName);
     setSparePartsSearch('');
     try {
-      const response = await fetch(url);
+      // Añadido timestamp para evitar cache en fetch
+      const response = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`);
       const text = await response.text();
       const rows = text.split('\n');
       const headers = rows[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
@@ -447,8 +449,9 @@ const MenuScreen = ({
     switch (menuSubScreen) {
       case 'equipos':
         const filtered = equipment.filter(item => {
-          const eng = (loginForm.engineerName || '').toLowerCase();
-          const resp = (item.responsable || '').toLowerCase();
+          const eng = (loginForm.engineerName || '').toLowerCase().replace(/[\s-]/g, '');
+          const resp = (item.responsable || '').toLowerCase().replace(/[\s-]/g, '');
+          // Comparación flexible (ignora espacios y guiones) para evitar fallos de cache
           const matchEng = isSupervisor ? true : (eng.includes(resp) || resp.includes(eng));
           const matchTerm = (item.serie + (item.modelo || '') + (item.descripcion || '') + (item.cliente || '')).toLowerCase().includes(searchTerm.toLowerCase());
           return matchEng && matchTerm;
@@ -524,7 +527,6 @@ const MenuScreen = ({
             <Select label="Área" name="area" value={reportForm.area} onChange={handleReportChange} options={['Recolección', 'Fraccionamiento', 'Aféresis']} />
             <TextArea label="Falla Reportada" name="falla" value={reportForm.falla} onChange={handleReportChange} />
             
-            {/* Buscador personalizado (Solución para Multiplataforma / iPhone) */}
             <div className="relative">
               <Input 
                 label="Reporta" 
@@ -805,7 +807,12 @@ const MenuScreen = ({
         );
 
       case 'ordenesAsignadas':
-        const myOrders = sheetOrders.filter(so => so.engineerName === loginForm.engineerName);
+        const myOrders = sheetOrders.filter(so => {
+          // Normalización para filtrar órdenes incluso si el nombre en Sheets aún tiene espacios
+          const eng = (loginForm.engineerName || '').toLowerCase().replace(/[\s-]/g, '');
+          const orderEng = (so.engineerName || '').toLowerCase().replace(/[\s-]/g, '');
+          return eng === orderEng;
+        });
         
         if (selectedOrderDetails) {
           const so = selectedOrderDetails;
@@ -1019,7 +1026,7 @@ const MenuScreen = ({
       )}
 
       {showGenerateConfirm && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm" onClick={e => e.stopPropagation()}><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-green-400 uppercase">Confirmar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">La información se enviará a la nube.</p><div className="flex gap-4"><button onClick={() => setShowGenerateConfirm(false)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">CERRAR</button><button onClick={() => { setShowGenerateConfirm(false); submitReport(); }} className="flex-1 py-5 text-lg bg-green-600 text-white rounded-2xl font-black">ENVIAR</button></div></div></div>)}
-      {contactToDelete && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm" onClick={e => e.stopPropagation()}><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-red-400 uppercase">Eliminar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Eliminar a <br/><span className="text-white">{contactToDelete.name}</span>?</p><div className="flex gap-4"><button onClick={() => setContactToDelete(null)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { deleteContact(contactToDelete.id); setContactToDelete(null); setMessage("CONTACTO ELIMINADO."); setTimeout(() => setMessage(""), 3000); }} className="flex-1 py-5 text-lg bg-red-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
+      {contactToDelete && (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm" onClick={e => e.stopPropagation()}><div className="bg-gray-800 p-10 rounded-[2.5rem] w-full max-sm text-center shadow-2xl animate-popIn"><h3 className="font-black text-3xl mb-5 text-red-400 uppercase">Eliminar</h3><p className="text-base text-gray-400 mb-8 font-bold leading-relaxed">¿Eliminar a <br/><span className="text-white">{contactToDelete.name}</span>?</p><div className="flex gap-4"><button onClick={() => setContactToDelete(null)} className="flex-1 py-5 text-lg bg-gray-700 rounded-2xl font-black text-gray-300">NO</button><button onClick={() => { deleteContact(contactToDelete.id); setContactToDelete(null); setMessage("CONTACTO ELIMINADO."); setTimeout(() => setMessage(""), 3000); }} className="flex-1 py-5 text-lg bg-red-600 text-white rounded-2xl font-black">SÍ</button></div></div></div>)}
       
       {selectedContact && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-[100] backdrop-blur-sm" onClick={() => setSelectedContact(null)}>
@@ -1232,7 +1239,8 @@ export default function App() {
   useEffect(() => {
     const fetchEquipment = async () => {
       try {
-        const resp = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS86FFjvfk8XJXF0bqgcyzAhADOQbtLDFH7JwFcFvqWxJHZugcqxGPky63hB65KJXRfChRXK_kapw3x/pub?gid=0&single=true&output=csv');
+        // Cache busting añadido
+        const resp = await fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vS86FFjvfk8XJXF0bqgcyzAhADOQbtLDFH7JwFcFvqWxJHZugcqxGPky63hB65KJXRfChRXK_kapw3x/pub?gid=0&single=true&output=csv&t=${Date.now()}`);
         const text = await resp.text();
         const rows = text.split('\n');
         const headers = rows[0].split(',').map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
@@ -1260,7 +1268,8 @@ export default function App() {
   useEffect(() => {
     const fetchSheetOrders = async () => {
       try {
-        const resp = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRqMsPTihy-C9WpValwIav8qpZMi7r710R3M3cOPakcgQ2kEhMJVl1Mw4UlKSt8yB6J2EP_wU5tcm3A/pub?gid=0&single=true&output=csv');
+        // Cache busting añadido
+        const resp = await fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vRqMsPTihy-C9WpValwIav8qpZMi7r710R3M3cOPakcgQ2kEhMJVl1Mw4UlKSt8yB6J2EP_wU5tcm3A/pub?gid=0&single=true&output=csv&t=${Date.now()}`);
         const text = await resp.text();
         const rows = text.split('\n');
         const headers = rows[0].split(',').map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
@@ -1315,8 +1324,19 @@ export default function App() {
     try {
       const q = collection(db, 'artifacts', appId, 'public', 'data', 'engineers');
       const s = await getDocs(q);
-      const found = s.docs.find(d => d.data().engineerName === loginForm.engineerName && d.data().password === loginForm.password);
+      
+      // Búsqueda flexible para ingenieros antiguos registrados con espacio
+      const found = s.docs.find(d => {
+        const dbName = (d.data().engineerName || '').replace(/[\s-]/g, '');
+        const inputName = loginForm.engineerName.replace(/[\s-]/g, '');
+        return dbName === inputName && d.data().password === loginForm.password;
+      });
+
       if (!found) { setError("PIN INCORRECTO."); setLoading(false); return; }
+      
+      // Actualizamos automáticamente el nombre local al formato correcto del mock (con guion)
+      setLoginForm(prev => ({ ...prev, engineerName: loginForm.engineerName }));
+      
       setError(''); navigate('menu');
     } catch (e) { setError("ERROR FIREBASE: " + e.message); } finally { setLoading(false); }
   };
@@ -1333,7 +1353,11 @@ export default function App() {
     try {
       const q = collection(db, 'artifacts', appId, 'public', 'data', 'engineers');
       const s = await getDocs(q);
-      const found = s.docs.find(d => d.data().engineerName === registerForm.engineerName);
+      const found = s.docs.find(d => {
+        const dbName = (d.data().engineerName || '').replace(/[\s-]/g, '');
+        const inputName = registerForm.engineerName.replace(/[\s-]/g, '');
+        return dbName === inputName;
+      });
       if (found) { setError("EL INGENIERO YA ESTÁ REGISTRADO."); setLoading(false); return; }
       await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'engineers'), { ...registerForm, createdAt: new Date().toISOString() });
       handleScreenChange('login');
