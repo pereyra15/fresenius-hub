@@ -139,6 +139,9 @@ const ReporteEquiposSVG = () => (
 const MaterialApoyoSVG = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2zM10 10l-2 2 2 2"></path></svg>
 );
+const AdministrativoSVG = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 11h.01M16 11h.01M8 11h.01M12 15h.01M16 15h.01M8 15h.01M21 21H3V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v16zM3 10h18"></path></svg>
+);
 const ContactosSVG = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
 );
@@ -249,8 +252,8 @@ const MenuScreen = ({
       setCurrentSparePartView(null);
     } else if (documentationSubScreen) {
       setDocumentationSubScreen(null);
-    } else if (menuSubScreen === 'generarOS' || menuSubScreen === 'ordenesAsignadas') {
-      setMenuSubScreen('reporteEquipos');
+    } else if (menuSubScreen === 'generarOS' || menuSubScreen === 'ordenesAsignadas' || menuSubScreen === 'administrativo') {
+      setMenuSubScreen('dashboard');
     } else {
       setMenuSubScreen('dashboard');
     }
@@ -661,6 +664,35 @@ const MenuScreen = ({
           </div>
         );
 
+      case 'administrativo':
+        const adminLinks = [
+          { t: 'PILARES ESTRATEGICOS', l: 'https://drive.google.com/file/d/1VdlSdTz8pgqd4JI3g9i0V7UUR0PFtmig/view?usp=sharing' },
+          { t: 'OGST NUEVOS PROYECTOS DE EFICIENCIA', l: 'https://drive.google.com/file/d/1glBnT_KCVZzCDu23NA4Qck1VyqT-xtq4/view?usp=sharing' },
+          { t: 'OGST OBJETIVOS FINANCIEROS TS', l: 'https://drive.google.com/file/d/1uSQMhv7aWhorQUQjQ0IbAzXxs6XUoyM-/view?usp=drive_link' }
+        ];
+
+        return (
+          <div className="p-6 bg-gray-800 border border-gray-700 rounded-[2rem] animate-fadeIn pb-20 text-left shadow-sm">
+            <h3 className="text-3xl font-black mb-8 text-white tracking-tighter border-b border-gray-700 pb-4 uppercase">Administrativo</h3>
+            <div className="grid gap-4">
+              {adminLinks.map((d, i) => (
+                <button 
+                  key={i} 
+                  onClick={() => window.open(d.l, '_blank')} 
+                  className="p-6 bg-gray-700 border-2 border-gray-600 rounded-2xl font-black text-blue-300 text-left hover:bg-gray-600 transition-all flex items-center gap-4"
+                >
+                  <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-blue-400">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                  </div>
+                  <div className="flex flex-col flex-1">
+                    <span className="text-sm md:text-base uppercase tracking-tight leading-tight text-gray-100 font-black">{d.t}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+
       case 'materialApoyo':
         if (documentationSubScreen === 'SPAREPARTS') {
           if (currentSparePartView) {
@@ -820,7 +852,7 @@ const MenuScreen = ({
               {Object.keys(docLinks).map(k => (
                 <button key={k} onClick={() => setDocumentationSubScreen(k)} className="p-6 bg-gray-800 border-2 border-gray-700 rounded-[2rem] text-[11px] font-black uppercase tracking-widest text-gray-200 shadow-sm hover:border-blue-500 transition-all flex flex-col items-center gap-4 active:scale-95">
                   <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-blue-400">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                   </div>
                   {k}
                 </button>
@@ -997,6 +1029,7 @@ const MenuScreen = ({
             <MenuButton label="Inventario" subScreenId="equipos" svgIcon={<EquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} />
             <MenuButton label="Reportes" subScreenId="reporteEquipos" svgIcon={<ReporteEquiposSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} />
             <MenuButton label="Material" subScreenId="materialApoyo" svgIcon={<MaterialApoyoSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} />
+            <MenuButton label="Administrativo" subScreenId="administrativo" svgIcon={<AdministrativoSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} />
             <MenuButton label="Agenda" subScreenId="contactos" svgIcon={<ContactosSVG />} setMenuSubScreen={setMenuSubScreen} menuSubScreen={menuSubScreen} />
           </div>
         ) : renderContent()}
