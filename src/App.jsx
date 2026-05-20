@@ -1016,10 +1016,10 @@ export default function App() {
       await signInWithEmailAndPassword(auth, email, loginForm.password);
       
       setError(''); 
-      setLoginForm({ engineerName: '', password: '' });
+      setLoginForm(prev => ({ ...prev, password: '' })); // Conservamos el nombre, limpiamos solo el PIN
       navigate('menu');
     } catch (e) { 
-      setLoginForm({ ...loginForm, password: '' });
+      setLoginForm(prev => ({ ...prev, password: '' }));
       setError("PIN incorrecto para el ingeniero seleccionado"); 
     } finally { 
       setLoading(false); 
