@@ -293,13 +293,16 @@ const MenuScreen = ({
     if (!reportForm.serie || !reportForm.falla) { setError("Campos de equipo y falla requeridos."); return; }
     setLoadingReport(true);
     try {
-      if (!auth.currentUser) throw new Error("No user session");
+      // Nos aseguramos síncronamente de obtener el id de usuario activo
+      const currentUserId = userId || auth.currentUser?.uid;
+      if (!currentUserId) throw new Error("No hay sesión de usuario activa.");
 
-      const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'service_orders'), {
+      // Apuntamos directamente a la ruta raíz "service_orders"
+      const docRef = await addDoc(collection(db, 'service_orders'), {
         ...reportForm, 
         status: 'Abierto', 
         createdAt: new Date().toISOString(), 
-        createdBy: auth.currentUser.uid, 
+        createdBy: currentUserId, 
         engineerName: reportForm.ingeniero 
       });
 
@@ -358,7 +361,8 @@ const MenuScreen = ({
 
     try {
       if (order.id && !String(order.id).startsWith('sheet-')) {
-        const orderRef = doc(db, 'artifacts', appId, 'public', 'data', 'service_orders', order.id);
+        // Aseguramos que la actualización de estado también apunte a la ruta raíz
+        const orderRef = doc(db, 'service_orders', order.id);
         try {
           await updateDoc(orderRef, { status: 'Cerrado', closedAt: new Date().toISOString() });
         } catch (firebaseErr) {
@@ -994,7 +998,8 @@ export default function App() {
   useEffect(() => {
     if (!user) return;
     const unsubContacts = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'contacts'), s => setContacts(s.docs.map(d => ({id: d.id, ...d.data()}))), e => console.error(e));
-    const unsubOrders = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'service_orders'), s => setServiceOrders(s.docs.map(d => ({id: d.id, ...d.data()}))), e => console.error(e));
+    // Nos aseguramos que el lector en tiempo real también escuche la ruta raíz
+    const unsubOrders = onSnapshot(collection(db, 'service_orders'), s => setServiceOrders(s.docs.map(d => ({id: d.id, ...d.data()}))), e => console.error(e));
     return () => { if(unsubContacts) unsubContacts(); if(unsubOrders) unsubOrders(); };
   }, [user]);
 
