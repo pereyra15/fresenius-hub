@@ -306,21 +306,21 @@ const MenuScreen = ({
         engineerName: reportForm.ingeniero 
       });
 
-      let engineerEmail = "";
-      try {
-        const engQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'engineers'));
-        const engSnap = await getDocs(engQuery);
-        const engDoc = engSnap.docs.find(d => {
-          const dbName = (d.data().engineerName || '').replace(/[\s-]/g, '');
-          const inputName = reportForm.ingeniero.replace(/[\s-]/g, '');
-          return dbName === inputName;
-        });
-        if (engDoc) {
-          engineerEmail = engDoc.data().email;
-        }
-      } catch (e) {
-        console.warn("No se pudo obtener el email del ingeniero para la notificación:", e);
-      }
+      // --- NUEVA LÓGICA DE CORREO DINÁMICO ---
+      // Calculamos dinámicamente el correo basado en el ingeniero seleccionado en el reporte,
+      // para que funcione tanto para ingenieros normales como para supervisores asignando a otros.
+      const parts = reportForm.ingeniero.split('-');
+      const namePart = parts.length > 1 ? parts[1].trim() : reportForm.ingeniero.trim();
+      
+      const cleanName = namePart
+        .toLowerCase()
+        .replace(/ñ/g, 'n')
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, ".");
+        
+      const engineerEmail = `${cleanName}@fresenius-kabi.com`;
+      // ----------------------------------------
 
       if (GOOGLE_SHEETS_URL) {
         try {
@@ -333,7 +333,7 @@ const MenuScreen = ({
                 action: 'CREATE',      
                 firebaseId: docRef.id, 
                 ESTATUS: 'Abierto',
-                engineerEmail: engineerEmail 
+                engineerEmail: engineerEmail // Enviamos el correo correcto al Apps Script
             }) 
           });
         } catch (e) { console.error("Sheet Sync Failed:", e); }
