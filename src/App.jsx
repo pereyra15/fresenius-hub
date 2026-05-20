@@ -1012,6 +1012,7 @@ export default function App() {
       
       const cleanName = namePart
         .toLowerCase()
+        .replace(/ñ/g, 'n')
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/\s+/g, ".");
