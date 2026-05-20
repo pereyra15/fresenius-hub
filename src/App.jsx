@@ -75,15 +75,20 @@ const fallaMapping = [
 
 // --- COMPONENTES UI ---
 
-const Input = ({ label, name, type = 'text', value, onChange, maxLength, inputMode, readOnly, placeholder, onFocus, onBlur }) => (
+const Input = ({ label, name, type = 'text', value, onChange, maxLength, inputMode, readOnly, placeholder, onFocus, onBlur, onClear }) => (
   <div className="mb-5 text-left relative">
     <label className="block text-gray-300 text-xs font-black mb-1.5 uppercase tracking-wider">{label}</label>
-    <input
-      className={`w-full p-4 border rounded-2xl text-base transition-all focus:ring-2 focus:ring-blue-500 outline-none shadow-sm ${readOnly ? 'bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed' : 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'}`}
-      type={type} name={name} value={value} onChange={onChange} maxLength={maxLength} 
-      inputMode={inputMode} readOnly={readOnly} placeholder={placeholder}
-      onFocus={onFocus} onBlur={onBlur} autoComplete="off"
-    />
+    <div className="relative">
+      <input
+        className={`w-full p-4 ${onClear && value && !readOnly ? 'pr-12' : ''} border rounded-2xl text-base transition-all focus:ring-2 focus:ring-blue-500 outline-none shadow-sm ${readOnly ? 'bg-gray-800 text-gray-500 border-gray-700 cursor-not-allowed' : 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'}`}
+        type={type} name={name} value={value} onChange={onChange} maxLength={maxLength} 
+        inputMode={inputMode} readOnly={readOnly} placeholder={placeholder}
+        onFocus={onFocus} onBlur={onBlur} autoComplete="off"
+      />
+      {onClear && value && !readOnly && (
+        <button type="button" onMouseDown={(e) => { e.preventDefault(); onClear(); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-600 transition-colors z-10 font-bold text-lg">✕</button>
+      )}
+    </div>
   </div>
 );
 
@@ -472,7 +477,12 @@ const MenuScreen = ({
           <div className="bg-gray-800 rounded-[2rem] shadow-sm border border-gray-700 flex flex-col animate-fadeIn relative">
             <div className="sticky top-0 z-50 bg-gray-900 rounded-t-[2rem] border-b border-gray-700 shadow-md">
               <div className="p-4 border-b border-gray-700">
-                <input type="text" placeholder="Buscar por Serie, Descripción o Hospital..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+                <div className="relative">
+                  <input type="text" placeholder="Buscar por Serie, Descripción o Hospital..." className={`w-full p-4 ${searchTerm ? 'pr-12' : ''} border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-blue-500 shadow-sm`} value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+                  {searchTerm && (
+                    <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-600 transition-colors font-bold text-lg">✕</button>
+                  )}
+                </div>
               </div>
               <div className="flex px-2 font-black text-gray-400 text-[10px] uppercase tracking-wider">
                 <div className="py-4 px-2 w-[110px] shrink-0 text-left">SERIE</div>
@@ -545,7 +555,7 @@ const MenuScreen = ({
             <Select label="Área" name="area" value={reportForm.area} onChange={handleReportChange} options={['Recolección', 'Fraccionamiento', 'Aféresis']} />
             <TextArea label="Falla Reportada" name="falla" value={reportForm.falla} onChange={handleReportChange} />
             <div className="relative">
-              <Input label="Reporta" name="reporta" value={reportForm.reporta} onChange={handleReportChange} onFocus={() => { if(reportForm.reporta.length > 0) setShowContactSuggestions(true); }} placeholder="Busca por nombre u hospital..." />
+              <Input label="Reporta" name="reporta" value={reportForm.reporta} onChange={handleReportChange} onClear={() => { setReportForm(prev => ({...prev, reporta: ''})); setShowContactSuggestions(false); }} onFocus={() => { if(reportForm.reporta.length > 0) setShowContactSuggestions(true); }} placeholder="Busca por nombre u hospital..." />
               {showContactSuggestions && filteredSuggestions.length > 0 && (
                 <div className="absolute z-[110] top-[85px] left-0 right-0 bg-gray-700 border border-gray-600 rounded-2xl shadow-2xl max-h-[220px] overflow-y-auto animate-fadeIn">
                   {filteredSuggestions.map((c, idx) => (
@@ -576,7 +586,14 @@ const MenuScreen = ({
             <div className="sticky top-0 z-50 bg-gray-900 rounded-t-[2rem] border-b border-gray-700 shadow-md">
               <div className="p-5 flex flex-col gap-4">
                 <div className="flex justify-between items-center"><h3 className="text-xl font-black text-purple-300 tracking-tight uppercase">Agenda</h3>{!showAddContactForm && (<button onClick={() => setShowAddContactForm(true)} className="bg-purple-600 text-white text-[11px] font-black py-2 px-5 rounded-full shadow-lg active:scale-90 transition-all uppercase">Nuevo+</button>)}</div>
-                {!showAddContactForm && (<input type="text" placeholder="Buscar nombre, hospital o número..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-purple-500 shadow-sm" value={contactSearch} onChange={e => setContactSearch(e.target.value)} />)}
+                {!showAddContactForm && (
+                  <div className="relative">
+                    <input type="text" placeholder="Buscar nombre, hospital o número..." className={`w-full p-4 ${contactSearch ? 'pr-12' : ''} border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-purple-500 shadow-sm`} value={contactSearch} onChange={e => setContactSearch(e.target.value)} />
+                    {contactSearch && (
+                      <button onClick={() => setContactSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-600 transition-colors font-bold text-lg">✕</button>
+                    )}
+                  </div>
+                )}
                 {showAddContactForm && (
                   <div className="bg-gray-800 p-6 rounded-3xl border border-gray-700 shadow-xl animate-slideDown max-h-[500px] overflow-y-auto mt-2">
                     <div className="flex justify-between items-center mb-6 text-left uppercase"><h4 className="text-xs font-black text-purple-400">Registro Clínico</h4><button className="text-gray-300 hover:text-white text-xl" onClick={() => setShowAddContactForm(false)}>✕</button></div>
@@ -636,7 +653,12 @@ const MenuScreen = ({
                         <h3 className="font-black text-indigo-300 tracking-tight uppercase text-sm">Refacciones: {currentSparePartView}</h3>
                       </div>
                     </div>
-                    <input type="text" placeholder="Buscar refacción (ej. número de parte o descripción)..." className="w-full p-4 border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm" value={sparePartsSearch} onChange={e => setSparePartsSearch(e.target.value)} />
+                    <div className="relative w-full">
+                      <input type="text" placeholder="Buscar refacción (ej. número de parte o descripción)..." className={`w-full p-4 ${sparePartsSearch ? 'pr-12' : ''} border border-gray-600 bg-gray-700 text-white rounded-2xl text-base outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm`} value={sparePartsSearch} onChange={e => setSparePartsSearch(e.target.value)} />
+                      {sparePartsSearch && (
+                        <button onClick={() => setSparePartsSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-600 transition-colors font-bold text-lg">✕</button>
+                      )}
+                    </div>
                   </div>
                   {sparePartsData[0] && (
                     <div className="flex w-full px-2 text-[10px]">
