@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
 import { 
   getAuth, 
-  signInAnonymously, 
+  signInWithEmailAndPassword, 
   signInWithCustomToken, 
   onAuthStateChanged 
 } from 'firebase/auth';
@@ -154,28 +154,10 @@ const LandingScreen = ({ setScreen }) => (
       <h1 className="text-6xl font-black text-blue-400 tracking-tighter">FRESENIUS</h1>
       <p className="text-xs font-black text-gray-400 tracking-[0.4em] mt-3 uppercase">Engineering Hub</p>
     </div>
-    <button onClick={() => setScreen('register')} className="p-8 bg-gray-800 border-2 border-gray-700 rounded-[2.5rem] shadow-xl hover:border-blue-500 transition-all group flex items-center gap-6">
-      <div className="w-16 h-16 bg-gray-700 rounded-2xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg></div>
-      <div className="text-left"><span className="block font-black text-white text-xl uppercase tracking-tight leading-none">Registrarse</span><span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-2">Crear nueva cuenta</span></div>
-    </button>
     <button onClick={() => setScreen('login')} className="p-8 bg-blue-600 rounded-[2.5rem] shadow-xl hover:bg-blue-700 transition-all group flex items-center gap-6">
       <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg></div>
       <div className="text-left"><span className="block font-black text-white text-xl uppercase tracking-tight leading-none">Ingresar</span><span className="text-[11px] font-bold text-blue-200 uppercase tracking-widest mt-2">Acceso restringido</span></div>
     </button>
-  </div>
-);
-
-const RegisterScreen = ({ form, onChange, onSubmit, loading, setScreen }) => (
-  <div className="animate-fadeIn pb-10">
-    <div className="flex items-center gap-4 mb-10"><button onClick={() => setScreen('landing')} className="w-12 h-12 rounded-xl bg-gray-700 flex items-center justify-center text-gray-300 hover:bg-gray-600 text-xl">←</button><h2 className="text-3xl font-black text-white tracking-tighter uppercase">Registro</h2></div>
-    <div className="space-y-2">
-      <Select label="Nombre de Ingeniero *" name="engineerName" value={form.engineerName} onChange={onChange} options={mockEngineers} />
-      <Input label="Correo Electrónico *" name="email" type="email" value={form.email} onChange={onChange} placeholder="ejemplo@fmc-ag.com" />
-      <Input label="Teléfono de Contacto *" name="phone" value={form.phone} onChange={onChange} placeholder="5512345678" />
-      <Input label="Contraseña (PIN) *" name="password" type="password" value={form.password} onChange={onChange} maxLength={6} placeholder="••••••" />
-      <button onClick={onSubmit} disabled={loading} className="w-full bg-blue-600 text-white text-lg font-black py-5 rounded-2xl mt-6 shadow-xl active:scale-95 transition-all uppercase disabled:opacity-50">{loading ? 'Procesando...' : 'Crear Cuenta'}</button>
-      <p className="text-[10px] font-black text-gray-400 uppercase mt-4 text-center tracking-widest">* Todos los campos son obligatorios</p>
-    </div>
   </div>
 );
 
@@ -311,13 +293,13 @@ const MenuScreen = ({
     if (!reportForm.serie || !reportForm.falla) { setError("Campos de equipo y falla requeridos."); return; }
     setLoadingReport(true);
     try {
-      if (!userId) throw new Error("No user session");
+      if (!auth.currentUser) throw new Error("No user session");
 
       const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'service_orders'), {
         ...reportForm, 
         status: 'Abierto', 
         createdAt: new Date().toISOString(), 
-        createdBy: userId, 
+        createdBy: auth.currentUser.uid, 
         engineerName: reportForm.ingeniero 
       });
 
@@ -863,7 +845,6 @@ export default function App() {
   const [contacts, setContacts] = useState([]);
   const [serviceOrders, setServiceOrders] = useState([]);
   const [sheetOrders, setSheetOrders] = useState([]); 
-  const [registerForm, setRegisterForm] = useState({ engineerName: '', phone: '', email: '', password: '' });
   const [loginForm, setLoginForm] = useState({ engineerName: '', password: '' });
 
   const stateRef = useRef({ screen, menuSubScreen, documentationSubScreen, currentSparePartView });
@@ -894,9 +875,8 @@ export default function App() {
   };
 
   const handleScreenChange = (newScreen) => {
-    if (newScreen === 'register') { setRegisterForm({ engineerName: '', phone: '', email: '', password: '' }); }
-    else if (newScreen === 'login') { setLoginForm({ engineerName: '', password: '' }); }
-    else if (newScreen === 'landing') { setLoginForm({ engineerName: '', password: '' }); setRegisterForm({ engineerName: '', phone: '', email: '', password: '' }); }
+    if (newScreen === 'login') { setLoginForm({ engineerName: '', password: '' }); }
+    else if (newScreen === 'landing') { setLoginForm({ engineerName: '', password: '' }); }
     navigate(newScreen);
   };
 
@@ -931,8 +911,9 @@ export default function App() {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) { await signInWithCustomToken(auth, __initial_auth_token); }
-        else { await signInAnonymously(auth); }
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) { 
+          await signInWithCustomToken(auth, __initial_auth_token); 
+        }
       } catch (e) { console.error("Error de autenticación", e); }
     };
     initAuth();
@@ -1019,40 +1000,30 @@ export default function App() {
 
   const loginEngineer = async () => {
     if (!loginForm.engineerName || !loginForm.password) { setError("INGRESE PIN."); return; }
-    if (!user) { setError("ERROR: Firebase Auth bloqueado."); return; }
     setLoading(true);
     try {
-      const q = collection(db, 'artifacts', appId, 'public', 'data', 'engineers');
-      const s = await getDocs(q);
-      const found = s.docs.find(d => {
-        const dbName = (d.data().engineerName || '').replace(/[\s-]/g, '');
-        const inputName = loginForm.engineerName.replace(/[\s-]/g, '');
-        return dbName === inputName && d.data().password === loginForm.password;
-      });
-      if (!found) { setError("PIN INCORRECTO."); setLoading(false); return; }
-      setError(''); navigate('menu');
-    } catch (e) { setError("ERROR FIREBASE: " + e.message); } finally { setLoading(false); }
-  };
+      const parts = loginForm.engineerName.split('-');
+      const namePart = parts.length > 1 ? parts[1].trim() : loginForm.engineerName.trim();
+      
+      const cleanName = namePart
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, ".");
+        
+      const email = `${cleanName}@fresenius-kabi.com`;
 
-  const registerEngineer = async () => {
-    if (!registerForm.engineerName || !registerForm.phone || !registerForm.email || !registerForm.password) { setError("TODOS LOS CAMPOS SON OBLIGATORIOS."); return; }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; if (!emailRegex.test(registerForm.email)) { setError("CORREO ELECTRÓNICO INVÁLIDO."); return; }
-    const phoneRegex = /^\d{10}$/; if (!phoneRegex.test(registerForm.phone)) { setError("EL TELÉFONO DEBE TENER 10 DÍGITOS."); return; }
-    if (registerForm.password.length < 4) { setError("EL PIN DEBE TENER AL MENOS 4 CARACTERES."); return; }
-    if (!user) { setError("ERROR: Firebase Auth bloqueado."); return; }
-    setLoading(true);
-    try {
-      const q = collection(db, 'artifacts', appId, 'public', 'data', 'engineers');
-      const s = await getDocs(q);
-      const found = s.docs.find(d => {
-        const dbName = (d.data().engineerName || '').replace(/[\s-]/g, '');
-        const inputName = registerForm.engineerName.replace(/[\s-]/g, '');
-        return dbName === inputName;
-      });
-      if (found) { setError("EL INGENIERO YA ESTÁ REGISTRADO."); setLoading(false); return; }
-      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'engineers'), { ...registerForm, createdAt: new Date().toISOString() });
-      handleScreenChange('login');
-    } catch (e) { setError("ERROR FIREBASE: " + e.message); } finally { setLoading(false); }
+      await signInWithEmailAndPassword(auth, email, loginForm.password);
+      
+      setError(''); 
+      setLoginForm({ engineerName: '', password: '' });
+      navigate('menu');
+    } catch (e) { 
+      setLoginForm({ ...loginForm, password: '' });
+      setError("PIN incorrecto para el ingeniero seleccionado"); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   if (loading) return (<div className="h-screen flex flex-col items-center justify-center bg-gray-900 text-blue-400 font-black gap-4"><div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div><div className="animate-pulse tracking-widest text-xs font-black">Fresenius Hub...</div></div>);
@@ -1066,7 +1037,6 @@ export default function App() {
         </div>
         <div className="flex-1 overflow-y-auto scroll-smooth overscroll-none overflow-x-hidden">
           {screen === 'landing' && <LandingScreen setScreen={handleScreenChange} />}
-          {screen === 'register' && <RegisterScreen form={registerForm} onChange={e => setRegisterForm({...registerForm, [e.target.name]: e.target.value})} onSubmit={registerEngineer} loading={loading} setScreen={handleScreenChange} />}
           {screen === 'login' && <LoginScreen form={loginForm} onChange={e => setLoginForm({...loginForm, [e.target.name]: e.target.value})} onSubmit={loginEngineer} loading={loading} setScreen={handleScreenChange} />}
           {screen === 'menu' && (
             <MenuScreen 
