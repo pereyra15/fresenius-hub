@@ -1019,7 +1019,8 @@ export default function App() {
 
   useEffect(() => {
     if (!user) return;
-    const unsubContacts = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'contacts'), s => setContacts(s.docs.map(d => ({id: d.id, ...d.data()}))), e => console.error(e));
+    // Apuntamos directamente a la colección raíz "contacts" sin filtros para traer la agenda global
+    const unsubContacts = onSnapshot(collection(db, 'contacts'), s => setContacts(s.docs.map(d => ({id: d.id, ...d.data()}))), e => console.error(e));
     // Nos aseguramos que el lector en tiempo real también escuche la ruta raíz
     const unsubOrders = onSnapshot(collection(db, 'service_orders'), s => setServiceOrders(s.docs.map(d => ({id: d.id, ...d.data()}))), e => console.error(e));
     return () => { if(unsubContacts) unsubContacts(); if(unsubOrders) unsubOrders(); };
@@ -1070,8 +1071,8 @@ export default function App() {
             <MenuScreen 
               menuSubScreen={menuSubScreen} setMenuSubScreen={(val) => navigate('menu', val)} 
               loginForm={loginForm} setScreen={handleScreenChange} setMessage={setMessage} setError={setError} userId={user?.uid} db={db} contacts={contacts} 
-              addContact={c => addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'contacts'), {...c, addedBy: user?.uid})} 
-              deleteContact={id => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'contacts', id))} serviceOrders={serviceOrders} sheetOrders={sheetOrders} setSheetOrders={setSheetOrders} equipment={equipment} 
+              addContact={c => addDoc(collection(db, 'contacts'), {...c, addedBy: user?.uid})} 
+              deleteContact={id => deleteDoc(doc(db, 'contacts', id))} serviceOrders={serviceOrders} sheetOrders={sheetOrders} setSheetOrders={setSheetOrders} equipment={equipment} 
               documentationSubScreen={documentationSubScreen} setDocumentationSubScreen={(val) => navigate('menu', menuSubScreen === 'materialApoyo' ? 'materialApoyo' : menuSubScreen, val)}
               currentSparePartView={currentSparePartView} setCurrentSparePartView={(val) => navigate('menu', 'materialApoyo', 'SPAREPARTS', val)}
             />
