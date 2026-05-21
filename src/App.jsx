@@ -187,7 +187,7 @@ const MenuScreen = ({
 
   // --- FUNCIÓN PARA FORZAR HORA MÉXICO (DD/MM/YYYY HH:mm:ss) ---
   const getMexicoDate = () => {
-    const opcionesdf = { 
+    const formatter = new Intl.DateTimeFormat('es-MX', { 
       timeZone: 'America/Mexico_City', 
       year: 'numeric', 
       month: '2-digit', 
@@ -196,9 +196,16 @@ const MenuScreen = ({
       minute: '2-digit',
       second: '2-digit',
       hour12: false 
-    };
-    // Reemplazamos la coma que Intl suele agregar entre la fecha y la hora
-    return new Intl.DateTimeFormat('es-MX', opcionesdf).format(new Date()).replace(', ', ' ');
+    });
+    
+    // Forzamos manualmente el orden a DD/MM/YYYY usando las partes formateadas 
+    // para evitar que ciertos navegadores o el motor de Sheets cambien el orden a YYYY-MM-DD
+    const parts = formatter.formatToParts(new Date());
+    const p = {};
+    parts.forEach(({ type, value }) => { p[type] = value; });
+    
+    const fechaFormateada = `${p.day}/${p.month}/${p.year} ${p.hour}:${p.minute}:${p.second}`;
+    return fechaFormateada;
   };
 
   const [searchTerm, setSearchTerm] = useState('');
