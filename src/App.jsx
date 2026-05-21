@@ -3,7 +3,6 @@ import { initializeApp } from 'firebase/app';
 import { 
   getAuth, 
   signInWithEmailAndPassword, 
-  signInWithCustomToken, 
   onAuthStateChanged 
 } from 'firebase/auth';
 import { 
@@ -186,6 +185,22 @@ const MenuScreen = ({
   const isSupervisor = ['WSMG-DELFINO MUÑOZ', 'WSPL-CARLOS LUIS'].includes(loginForm.engineerName);
   const contentScrollRef = useRef(null);
 
+  // --- FUNCIÓN PARA FORZAR HORA MÉXICO (DD/MM/YYYY HH:mm:ss) ---
+  const getMexicoDate = () => {
+    const opcionesdf = { 
+      timeZone: 'America/Mexico_City', 
+      year: 'numeric', 
+      month: '2-digit', 
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false 
+    };
+    // Reemplazamos la coma que Intl suele agregar entre la fecha y la hora
+    return new Intl.DateTimeFormat('es-MX', opcionesdf).format(new Date()).replace(', ', ' ');
+  };
+
   const [searchTerm, setSearchTerm] = useState('');
   const [contactSearch, setContactSearch] = useState('');
   const [sparePartsSearch, setSparePartsSearch] = useState('');
@@ -209,7 +224,7 @@ const MenuScreen = ({
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
   const [reportForm, setReportForm] = useState({
-    tipoOS: '', serie: '', modelo: '', descripcionEquipo: '', fechaSolicitud: new Date().toISOString().split('T')[0],
+    tipoOS: '', serie: '', modelo: '', descripcionEquipo: '', fechaSolicitud: getMexicoDate().split(' ')[0],
     ano: new Date().getFullYear().toString(), cliente: '', ingeniero: loginForm.engineerName || '',
     falla: '', area: '', reporta: '', contacto: '', telefono: '', email: '', observaciones: '',
     catalogoFalla: 'FKMX-CS', codigoFalla: '', descripcionFalla: ''
@@ -223,7 +238,7 @@ const MenuScreen = ({
 
   const resetOSForm = () => {
     setReportForm({
-      tipoOS: '', serie: '', modelo: '', descripcionEquipo: '', fechaSolicitud: new Date().toISOString().split('T')[0],
+      tipoOS: '', serie: '', modelo: '', descripcionEquipo: '', fechaSolicitud: getMexicoDate().split(' ')[0],
       ano: new Date().getFullYear().toString(), cliente: '', ingeniero: loginForm.engineerName || '',
       falla: '', area: '', reporta: '', contacto: '', telefono: '', email: '', observaciones: '',
       catalogoFalla: 'FKMX-CS', codigoFalla: '', descripcionFalla: ''
@@ -302,11 +317,13 @@ const MenuScreen = ({
       const currentUserId = userId || auth.currentUser?.uid;
       if (!currentUserId) throw new Error("No hay sesión de usuario activa.");
 
+      const fechaHoraMexico = getMexicoDate();
+
       // Apuntamos directamente a la ruta raíz "service_orders"
       const docRef = await addDoc(collection(db, 'service_orders'), {
         ...reportForm, 
         status: 'Abierto', 
-        createdAt: new Date().toISOString(), 
+        createdAt: fechaHoraMexico, 
         createdBy: currentUserId, 
         engineerName: reportForm.ingeniero 
       });
@@ -348,7 +365,7 @@ const MenuScreen = ({
         id: docRef.id,
         ...reportForm,
         status: 'Abierto',
-        createdAt: new Date().toISOString(),
+        createdAt: fechaHoraMexico,
         engineerName: reportForm.ingeniero 
       };
       setSheetOrders(prev => [novaMendo, ...prev]);
@@ -365,11 +382,13 @@ const MenuScreen = ({
     setSelectedOrderDetails(prev => ({ ...prev, status: 'Cerrado' }));
 
     try {
+      const fechaHoraMexico = getMexicoDate();
+
       if (order.id && !String(order.id).startsWith('sheet-')) {
         // Aseguramos que la actualización de estado también apunte a la ruta raíz
         const orderRef = doc(db, 'service_orders', order.id);
         try {
-          await updateDoc(orderRef, { status: 'Cerrado', closedAt: new Date().toISOString() });
+          await updateDoc(orderRef, { status: 'Cerrado', closedAt: fechaHoraMexico });
         } catch (firebaseErr) {
           console.warn("El documento no se encontró en la base de datos de Firebase.", firebaseErr);
         }
@@ -935,15 +954,11 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const initAuth = async () => {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) { 
-          await signInWithCustomToken(auth, __initial_auth_token); 
-        }
-      } catch (e) { console.error("Error de autenticación", e); }
-    };
-    initAuth();
-    const unsubscribe = onAuthStateChanged(auth, u => { setUser(u); setLoading(false); });
+    // Escuchamos pasivamente el estado, sin forzar ningún inicio de sesión automático
+    const unsubscribe = onAuthStateChanged(auth, u => { 
+      setUser(u); 
+      setLoading(false); 
+    });
     return () => unsubscribe();
   }, []);
 
